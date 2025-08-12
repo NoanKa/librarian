@@ -1,4 +1,4 @@
-<p align="center"><img src="https://i.imgur.com/flcMvDC.png"></p>
+<p align="center"><img src="design/anasayfa.png"></p>
 
 ## Usage
 
