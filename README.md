@@ -1,38 +1,25 @@
-<p align="center"><img src="design/anasayfa.png"></p>
+<p align="center"><img src="design/homepage.png"></p>
+<p align="center"><img src="design/addbook.png"></p>
+<p align="center"><img src="design/removebook.png"></p>
+<p align="center"><img src="design/search.png"></p>
+<p align="center"><img src="design/filter.png"></p>
 
 ## Usage
-
-### Create an App
-
-```
-# with npx
-$ npx create-nextron-app my-app --example with-material-ui
-
-# with yarn
-$ yarn create nextron-app my-app --example with-material-ui
-
-# with pnpm
-$ pnpm dlx create-nextron-app my-app --example with-material-ui
-```
 
 ### Install Dependencies
 
 ```
-$ cd my-app
+$ cd librarian
 
-# using yarn or npm
-$ yarn (or `npm install`)
-
-# using pnpm
-$ pnpm install --shamefully-hoist
+$ npm install
 ```
 
 ### Use it
 
 ```
 # development mode
-$ yarn dev (or `npm run dev` or `pnpm run dev`)
+$ npm run dev
 
 # production build
-$ yarn build (or `npm run build` or `pnpm run build`)
+$ npm run build
 ```
