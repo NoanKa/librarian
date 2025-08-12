@@ -8,7 +8,6 @@ import DialogContent from '@mui/material/DialogContent'
 import DialogContentText from '@mui/material/DialogContentText'
 import DialogActions from '@mui/material/DialogActions'
 import Typography from '@mui/material/Typography'
-import Link from '../components/Link'
 import { styled } from '@mui/material'
 
 const Root = styled('div')(({ theme }) => {
@@ -52,9 +51,6 @@ export default function HomePage() {
           width={256}
           height={256}
         />
-        <Typography gutterBottom>
-          <Link href="/next">Go to the next page</Link>
-        </Typography>
         <Button variant="contained" color="secondary" onClick={handleClick}>
           Super Secret Password
         </Button>
