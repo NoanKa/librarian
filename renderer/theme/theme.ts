@@ -48,22 +48,11 @@ const theme = createTheme({
     MuiOutlinedInput: {
       styleOverrides: {
         root: {
-          '&:hover': {
-            borderColor: "rgba(1, 88, 80, 0.4)"
-          },
-          '&.Mui-focused': {
+          color: "#015850",
+          borderColor: "rgba(1, 88, 80, 0.4)",
+          "&.Mui-focused": {
             borderColor: "#015850",
-            boxShadow: 'none'
-          }
-        },
-        input: {
-          "&:-webkit-autofill": {
-            WebkitTextFillColor: "inherit",
-            border: "1px solid rgba(1, 88, 80, 0.4)",
-            color: "#015850",
-            '&:hover': {
-            borderColor: "rgba(1, 88, 80, 0.4)"
-          }
+            boxShadow: "none",
           },
         },
       },
