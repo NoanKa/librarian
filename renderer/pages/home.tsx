@@ -8,7 +8,7 @@ import DialogContent from '@mui/material/DialogContent'
 import DialogContentText from '@mui/material/DialogContentText'
 import DialogActions from '@mui/material/DialogActions'
 import Typography from '@mui/material/Typography'
-import { styled } from '@mui/material'
+import { Container, FormControl, InputLabel, OutlinedInput, styled } from '@mui/material'
 
 const Root = styled('div')(({ theme }) => {
   return {
@@ -42,6 +42,14 @@ export default function HomePage() {
         <Typography variant="h4" gutterBottom>
           Material-UI
         </Typography>
+        <Container style={{"backgroundColor": "white"}}>
+          <FormControl variant="outlined" fullWidth>
+            <OutlinedInput
+              id="my-input"
+              placeholder='Kitap'
+            />
+          </FormControl>
+        </Container>
         <Typography variant="subtitle1" gutterBottom>
           with Nextron
         </Typography>
