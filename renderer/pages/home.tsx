@@ -6,8 +6,27 @@ import {
   InputAdornment,
   OutlinedInput,
   Stack,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
 } from "@mui/material";
 import { FunnelIcon, MagnifyingGlassIcon } from "@phosphor-icons/react";
+
+interface Column {
+  id: "name" | "writer" | "type" | "status" | "actions";
+  label: string;
+}
+
+const columns: readonly Column[] = [
+  { id: "name", label: "Başlık" },
+  { id: "writer", label: "Yazar" },
+  { id: "type", label: "Tür" },
+  { id: "status", label: "Durum" },
+  { id: "actions", label: "" },
+];
 
 export default function HomePage() {
   return (
@@ -31,6 +50,7 @@ export default function HomePage() {
             border: "1px solid rgba(1, 88, 80, 0.6)",
             borderRadius: "0.31rem",
             padding: "1.87rem",
+            gap: "1.87rem",
             flex: 1,
             height: "100%",
           }}
@@ -53,6 +73,37 @@ export default function HomePage() {
               </InputAdornment>
             }
           />
+          <TableContainer>
+            <Table stickyHeader>
+              <TableHead>
+                <TableRow>
+                  {columns.map((column) => (
+                    <TableCell key={column.id}>{column.label}</TableCell>
+                  ))}
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {/* {rows
+              .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+              .map((row) => {
+                return (
+                  <TableRow hover role="checkbox" tabIndex={-1} key={row.code}>
+                    {columns.map((column) => {
+                      const value = row[column.id];
+                      return (
+                        <TableCell key={column.id} align={column.align}>
+                          {column.format && typeof value === 'number'
+                            ? column.format(value)
+                            : value}
+                        </TableCell>
+                      );
+                    })}
+                  </TableRow>
+                );
+              })} */}
+              </TableBody>
+            </Table>
+          </TableContainer>
         </Stack>
       </Box>
     </React.Fragment>
