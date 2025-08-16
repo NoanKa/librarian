@@ -2,9 +2,12 @@ import React, { useState } from "react";
 import Head from "next/head";
 import {
   Box,
+  Button,
+  Grid,
   IconButton,
   InputAdornment,
   OutlinedInput,
+  Pagination,
   Stack,
   Table,
   TableBody,
@@ -12,9 +15,15 @@ import {
   TableContainer,
   TableHead,
   TableRow,
-  Typography,
 } from "@mui/material";
-import { FunnelIcon, MagnifyingGlassIcon } from "@phosphor-icons/react";
+import {
+  ArrowCounterClockwiseIcon,
+  BookIcon,
+  BookOpenTextIcon,
+  FunnelIcon,
+  MagnifyingGlassIcon,
+  TrashIcon,
+} from "@phosphor-icons/react";
 
 interface Column {
   id: "name" | "writer" | "type" | "status" | "actions";
@@ -105,7 +114,7 @@ export default function HomePage() {
               </InputAdornment>
             }
           />
-          <TableContainer sx={{ backgroundColor: "white" }}>
+          <TableContainer sx={{ backgroundColor: "white", height: "100%" }}>
             <Table stickyHeader>
               <TableHead>
                 <TableRow>
@@ -130,13 +139,62 @@ export default function HomePage() {
                         >
                           {status.text}
                         </TableCell>
-                        <TableCell key={columns[4].id}></TableCell>
+                        <TableCell key={columns[4].id}>
+                          <Stack
+                            direction="row"
+                            spacing={1}
+                            justifyContent="center"
+                          >
+                            <Box sx={{ width: "2rem" }}>
+                              {row.status === 1 && (
+                                <IconButton edge="end" size="small">
+                                  <ArrowCounterClockwiseIcon
+                                    size="1.5rem"
+                                    color="#B05200"
+                                  />
+                                </IconButton>
+                              )}
+                            </Box>
+
+                            <Box sx={{ width: "2rem" }}>
+                              {row.status === 0 ? (
+                                <IconButton edge="end" size="small">
+                                  <BookOpenTextIcon
+                                    size="1.5rem"
+                                    color="#015850"
+                                  />
+                                </IconButton>
+                              ) : row.status === 1 ? (
+                                <IconButton edge="end" size="small">
+                                  <BookIcon size="1.5rem" color="#015850" />
+                                </IconButton>
+                              ) : null}
+                            </Box>
+
+                            <Box sx={{ width: "2rem" }}>
+                              <IconButton edge="end" size="small">
+                                <TrashIcon size="1.5rem" color="#FF0000" />
+                              </IconButton>
+                            </Box>
+                          </Stack>
+                        </TableCell>
                       </TableRow>
                     );
                   })}
               </TableBody>
             </Table>
           </TableContainer>
+          <Box sx={{ display: "flex", justifyContent: "center" }}>
+            <Pagination count={10} variant="outlined" shape="rounded" />
+          </Box>
+          <Stack direction={"row"} width={"100%"} justifyContent={"end"}>
+            <Button
+              variant="contained"
+              sx={{ paddingX: "2.5rem", paddingY: "0.5rem" }}
+            >
+              Ekle
+            </Button>
+          </Stack>
         </Stack>
       </Box>
     </React.Fragment>

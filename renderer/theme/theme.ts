@@ -57,6 +57,15 @@ const theme = createTheme({
         },
       },
     },
+    MuiTable: {
+      styleOverrides: {
+        root: {
+          tableLayout: "auto",
+          minWidth: "500px",
+          overflowX: "visible",
+        },
+      },
+    },
     MuiTableCell: {
       styleOverrides: {
         root: {
@@ -65,6 +74,15 @@ const theme = createTheme({
         stickyHeader: {
           backgroundColor: "#ffffff",
           color: "#015850",
+        },
+      },
+    },
+    MuiIconButton: {
+      styleOverrides: {
+        root: {
+          "&:hover": {
+            backgroundColor: "transparent",
+          },
         },
       },
     },
