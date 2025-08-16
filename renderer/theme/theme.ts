@@ -32,13 +32,6 @@ const theme = createTheme({
     fontFamily: roboto.style.fontFamily,
   },
   components: {
-    MuiPaper: {
-      styleOverrides: {
-        root: {
-          backgroundColor: "#FFFFFF",
-        },
-      },
-    },
     MuiButton: {
       styleOverrides: {
         root: {
@@ -64,17 +57,13 @@ const theme = createTheme({
         },
       },
     },
-    MuiTableContainer: {
-      styleOverrides: {
-        root: {
-          backgroundColor: "#ffffff",
-        },
-      },
-    },
     MuiTableCell: {
       styleOverrides: {
         root: {
           borderBottom: "1px solid rgba(1, 88, 80, 0.4)",
+        },
+        stickyHeader: {
+          backgroundColor: "#ffffff",
         },
       },
     },
