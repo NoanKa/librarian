@@ -19,7 +19,7 @@ const theme = createTheme({
       main: "#015850",
     },
     text: {
-      primary: "#015850",
+      primary: "#000000",
     },
     secondary: {
       main: "#656565",
@@ -64,6 +64,7 @@ const theme = createTheme({
         },
         stickyHeader: {
           backgroundColor: "#ffffff",
+          color: "#015850",
         },
       },
     },

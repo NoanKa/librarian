@@ -12,6 +12,7 @@ import {
   TableContainer,
   TableHead,
   TableRow,
+  Typography,
 } from "@mui/material";
 import { FunnelIcon, MagnifyingGlassIcon } from "@phosphor-icons/react";
 
@@ -37,20 +38,26 @@ const columns: readonly Column[] = [
 ];
 
 export default function HomePage() {
-  const [rows, setRows] = useState<Row[]>([{id: 1, name: "Kaşağı", writer: "Ömer Seyfettin", type: "Roman", status: 0} as Row]);
+  const [rows, setRows] = useState<Row[]>([
+    {
+      id: 1,
+      name: "Kaşağı",
+      writer: "Ömer Seyfettin",
+      type: "Roman",
+      status: 0,
+    } as Row,
+  ]);
 
-  const getStatus: (status: number) => {
+  const getStatus: (status: number) => { text: string; color: string } = (
+    status
+  ) => {
     switch (status) {
       case 0:
-        return "Okunmadı"
-        break;
-    
+        return { text: "Okunmadı", color: "#B05200" };
       case 1:
-        return "Devam Ediyor"
-        break;
-
+        return { text: "Devam Ediyor", color: "#0009B0" };
       case 2:
-        return "Tamamlandı"
+        return { text: "Tamamlandı", color: "#015850" };
     }
   };
 
@@ -109,38 +116,24 @@ export default function HomePage() {
               </TableHead>
               <TableBody>
                 {rows
-              // .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-              .map((row) => {
-                return (
-                  <TableRow hover role="checkbox" tabIndex={-1} key={row.id}>
-                    <TableCell key={columns[0].id}>
-                      {row.name}
-                    </TableCell>
-                    <TableCell key={columns[1].id}>
-                      {row.writer}
-                    </TableCell>
-                    <TableCell key={columns[2].id}>
-                      {row.type}
-                    </TableCell>
-                    <TableCell key={columns[3].id}>
-                      {row.status}
-                    </TableCell>
-                    <TableCell key={columns[4].id}>
-                      
-                    </TableCell>
-                    {columns.map((column) => {
-                      const value = row[column.id];
-                      return (
-                        <TableCell key={column.id}>
-                          {column.format && typeof value === 'number'
-                            ? column.format(value)
-                            : value}
+                  // .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                  .map((row) => {
+                    let status = getStatus(row.status);
+                    return (
+                      <TableRow role="checkbox" tabIndex={-1} key={row.id}>
+                        <TableCell key={columns[0].id}>{row.name}</TableCell>
+                        <TableCell key={columns[1].id}>{row.writer}</TableCell>
+                        <TableCell key={columns[2].id}>{row.type}</TableCell>
+                        <TableCell
+                          key={columns[3].id}
+                          sx={{ color: status.color }}
+                        >
+                          {status.text}
                         </TableCell>
-                      );
-                    })}
-                  </TableRow>
-                );
-              })}
+                        <TableCell key={columns[4].id}></TableCell>
+                      </TableRow>
+                    );
+                  })}
               </TableBody>
             </Table>
           </TableContainer>
