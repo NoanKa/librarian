@@ -24,19 +24,9 @@ import {
   MagnifyingGlassIcon,
   TrashIcon,
 } from "@phosphor-icons/react";
-
-interface Column {
-  id: "name" | "writer" | "type" | "status" | "actions";
-  label: string;
-}
-
-interface Row {
-  id: number;
-  name: string;
-  writer: string;
-  type: string;
-  status: number;
-}
+import EmptyList from "../components/EmptyList";
+import Column from "../components/interface/Column";
+import Row from "../components/interface/Row";
 
 const columns: readonly Column[] = [
   { id: "name", label: "Başlık" },
@@ -93,108 +83,122 @@ export default function HomePage() {
             padding: "1.87rem",
             gap: "1.87rem",
             flex: 1,
+            alignContent: "center",
+            justifyContent: "center",
             height: "100%",
           }}
         >
-          <OutlinedInput
-            placeholder="Kitap, yazar veya tür ara"
-            startAdornment={
-              <InputAdornment position="start">
-                <MagnifyingGlassIcon
-                  size={"1rem"}
-                  color="rgba(1, 88, 80, 0.4)"
-                />
-              </InputAdornment>
-            }
-            endAdornment={
-              <InputAdornment position="end">
-                <IconButton edge="end" size="small">
-                  <FunnelIcon size={"1.5rem"} color="#015850" />
-                </IconButton>
-              </InputAdornment>
-            }
-          />
-          <TableContainer sx={{ backgroundColor: "white", height: "100%" }}>
-            <Table stickyHeader>
-              <TableHead>
-                <TableRow>
-                  {columns.map((column) => (
-                    <TableCell key={column.id}>{column.label}</TableCell>
-                  ))}
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {rows
-                  // .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                  .map((row) => {
-                    let status = getStatus(row.status);
-                    return (
-                      <TableRow role="checkbox" tabIndex={-1} key={row.id}>
-                        <TableCell key={columns[0].id}>{row.name}</TableCell>
-                        <TableCell key={columns[1].id}>{row.writer}</TableCell>
-                        <TableCell key={columns[2].id}>{row.type}</TableCell>
-                        <TableCell
-                          key={columns[3].id}
-                          sx={{ color: status.color }}
-                        >
-                          {status.text}
-                        </TableCell>
-                        <TableCell key={columns[4].id}>
-                          <Stack
-                            direction="row"
-                            spacing={1}
-                            justifyContent="center"
-                          >
-                            <Box sx={{ width: "2rem" }}>
-                              {row.status === 1 && (
-                                <IconButton edge="end" size="small">
-                                  <ArrowCounterClockwiseIcon
-                                    size="1.5rem"
-                                    color="#B05200"
-                                  />
-                                </IconButton>
-                              )}
-                            </Box>
+          {rows.length == 0 ? (
+            <EmptyList />
+          ) : (
+            <>
+              <OutlinedInput
+                placeholder="Kitap, yazar veya tür ara"
+                startAdornment={
+                  <InputAdornment position="start">
+                    <MagnifyingGlassIcon
+                      size={"1rem"}
+                      color="rgba(1, 88, 80, 0.4)"
+                    />
+                  </InputAdornment>
+                }
+                endAdornment={
+                  <InputAdornment position="end">
+                    <IconButton edge="end" size="small">
+                      <FunnelIcon size={"1.5rem"} color="#015850" />
+                    </IconButton>
+                  </InputAdornment>
+                }
+              />
+              <TableContainer sx={{ backgroundColor: "white", height: "100%" }}>
+                <Table stickyHeader>
+                  <TableHead>
+                    <TableRow>
+                      {columns.map((column) => (
+                        <TableCell key={column.id}>{column.label}</TableCell>
+                      ))}
+                    </TableRow>
+                  </TableHead>
+                  <TableBody>
+                    {rows
+                      // .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                      .map((row) => {
+                        let status = getStatus(row.status);
+                        return (
+                          <TableRow role="checkbox" tabIndex={-1} key={row.id}>
+                            <TableCell key={columns[0].id}>
+                              {row.name}
+                            </TableCell>
+                            <TableCell key={columns[1].id}>
+                              {row.writer}
+                            </TableCell>
+                            <TableCell key={columns[2].id}>
+                              {row.type}
+                            </TableCell>
+                            <TableCell
+                              key={columns[3].id}
+                              sx={{ color: status.color }}
+                            >
+                              {status.text}
+                            </TableCell>
+                            <TableCell key={columns[4].id}>
+                              <Stack
+                                direction="row"
+                                spacing={1}
+                                justifyContent="center"
+                              >
+                                <Box sx={{ width: "2rem" }}>
+                                  {row.status === 1 && (
+                                    <IconButton edge="end" size="small">
+                                      <ArrowCounterClockwiseIcon
+                                        size="1.5rem"
+                                        color="#B05200"
+                                      />
+                                    </IconButton>
+                                  )}
+                                </Box>
 
-                            <Box sx={{ width: "2rem" }}>
-                              {row.status === 0 ? (
-                                <IconButton edge="end" size="small">
-                                  <BookOpenTextIcon
-                                    size="1.5rem"
-                                    color="#015850"
-                                  />
-                                </IconButton>
-                              ) : row.status === 1 ? (
-                                <IconButton edge="end" size="small">
-                                  <BookIcon size="1.5rem" color="#015850" />
-                                </IconButton>
-                              ) : null}
-                            </Box>
+                                <Box sx={{ width: "2rem" }}>
+                                  {row.status === 0 ? (
+                                    <IconButton edge="end" size="small">
+                                      <BookOpenTextIcon
+                                        size="1.5rem"
+                                        color="#015850"
+                                      />
+                                    </IconButton>
+                                  ) : row.status === 1 ? (
+                                    <IconButton edge="end" size="small">
+                                      <BookIcon size="1.5rem" color="#015850" />
+                                    </IconButton>
+                                  ) : null}
+                                </Box>
 
-                            <Box sx={{ width: "2rem" }}>
-                              <IconButton edge="end" size="small">
-                                <TrashIcon size="1.5rem" color="#FF0000" />
-                              </IconButton>
-                            </Box>
-                          </Stack>
-                        </TableCell>
-                      </TableRow>
-                    );
-                  })}
-              </TableBody>
-            </Table>
-          </TableContainer>
-          <Box sx={{ display: "flex", justifyContent: "center" }}>
-            <Pagination count={10} variant="outlined" shape="rounded" />
-          </Box>
-          <Stack direction={"row"} width={"100%"} justifyContent={"end"}>
-            <Button
-              variant="contained"
-              sx={{ paddingX: "2.5rem", paddingY: "0.5rem" }}
-            >
-              Ekle
-            </Button>
-          </Stack>
+                                <Box sx={{ width: "2rem" }}>
+                                  <IconButton edge="end" size="small">
+                                    <TrashIcon size="1.5rem" color="#FF0000" />
+                                  </IconButton>
+                                </Box>
+                              </Stack>
+                            </TableCell>
+                          </TableRow>
+                        );
+                      })}
+                  </TableBody>
+                </Table>
+              </TableContainer>
+              <Box sx={{ display: "flex", justifyContent: "center" }}>
+                <Pagination count={10} variant="outlined" shape="rounded" />
+              </Box>
+              <Stack direction={"row"} width={"100%"} justifyContent={"end"}>
+                <Button
+                  variant="contained"
+                  sx={{ paddingX: "2.5rem", paddingY: "0.5rem" }}
+                >
+                  Ekle
+                </Button>
+              </Stack>
+            </>
+          )}
         </Stack>
       </Box>
     </React.Fragment>
