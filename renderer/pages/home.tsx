@@ -27,6 +27,8 @@ import {
 import EmptyList from "../components/EmptyList";
 import Column from "../components/interface/Column";
 import Row from "../components/interface/Row";
+import DeleteModal from "../components/DeleteModal";
+import Loader from "../components/Loader";
 
 const columns: readonly Column[] = [
   { id: "name", label: "Başlık" },
@@ -37,6 +39,9 @@ const columns: readonly Column[] = [
 ];
 
 export default function HomePage() {
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState<boolean>(false);
+  const [isLoader, setIsLoader] = useState<boolean>(false);
+  const [selectedRow, setSelectedRow] = useState<Row>();
   const [rows, setRows] = useState<Row[]>([
     {
       id: 1,
@@ -65,6 +70,14 @@ export default function HomePage() {
       <Head>
         <title>Home - Nextron (with-material-ui)</title>
       </Head>
+      <Loader isOpen={isLoader} />
+      <DeleteModal
+        book={rows.at(0)}
+        isOpen={isDeleteModalOpen}
+        close={() => {
+          setIsDeleteModalOpen(false);
+        }}
+      />
       <Box
         sx={{
           display: "flex",
