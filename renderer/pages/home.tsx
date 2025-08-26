@@ -29,6 +29,7 @@ import Column from "../components/interface/Column";
 import Row from "../components/interface/Row";
 import DeleteModal from "../components/DeleteModal";
 import Loader from "../components/Loader";
+import NewBookModal from "../components/NewBookModal";
 
 const columns: readonly Column[] = [
   { id: "name", label: "Başlık" },
@@ -40,6 +41,7 @@ const columns: readonly Column[] = [
 
 export default function HomePage() {
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState<boolean>(false);
+  const [isNewBookModalOpen, setIsNewBookModalOpen] = useState<boolean>(false);
   const [isLoader, setIsLoader] = useState<boolean>(false);
   const [selectedRow, setSelectedRow] = useState<Row>();
   const [rows, setRows] = useState<Row[]>([
@@ -71,6 +73,7 @@ export default function HomePage() {
         <title>Home - Nextron (with-material-ui)</title>
       </Head>
       <Loader isOpen={isLoader} />
+      <NewBookModal isOpen={isNewBookModalOpen} close={() => setIsNewBookModalOpen(false)}/>
       <DeleteModal
         book={rows.at(0)}
         isOpen={isDeleteModalOpen}
@@ -106,6 +109,7 @@ export default function HomePage() {
           ) : (
             <>
               <OutlinedInput
+                color="primary"
                 placeholder="Kitap, yazar veya tür ara"
                 startAdornment={
                   <InputAdornment position="start">
@@ -187,7 +191,7 @@ export default function HomePage() {
                                 </Box>
 
                                 <Box sx={{ width: "2rem" }}>
-                                  <IconButton edge="end" size="small">
+                                  <IconButton edge="end" size="small" onClick={() => setIsDeleteModalOpen(true)}>
                                     <TrashIcon size="1.5rem" color="#FF0000" />
                                   </IconButton>
                                 </Box>
@@ -206,6 +210,7 @@ export default function HomePage() {
                 <Button
                   variant="contained"
                   sx={{ paddingX: "2.5rem", paddingY: "0.5rem" }}
+                  onClick={() => setIsNewBookModalOpen(true)}
                 >
                   Ekle
                 </Button>
