@@ -4,6 +4,7 @@ import Row from "./interface/Row";
 type DeleteModalProps = {
   book: Row;
   isOpen: boolean;
+  onClick: () => void;
   close: () => void;
 };
 
@@ -56,6 +57,7 @@ export default function DeleteModal(props: DeleteModalProps) {
               <Button
                 variant="contained"
                 sx={{ paddingX: "2.5rem", paddingY: "0.5rem" }}
+                onClick={props.onClick}
               >
                 Kaldır
               </Button>

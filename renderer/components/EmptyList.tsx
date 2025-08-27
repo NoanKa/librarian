@@ -1,7 +1,11 @@
 import { Box, Button, Typography } from "@mui/material";
 import { QuestionIcon } from "@phosphor-icons/react";
 
-export default function EmptyList() {
+type EmptyListProps = {
+  onClick: () => void;
+};
+
+export default function EmptyList(props: EmptyListProps) {
   return (
     <Box
       display="flex"
@@ -22,6 +26,7 @@ export default function EmptyList() {
       <Button
         variant="contained"
         sx={{ paddingX: "4rem", paddingY: "0.5rem", fontSize: "1rem" }}
+        onClick={props.onClick}
       >
         Ekle
       </Button>

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Head from "next/head";
 import {
   Box,
@@ -30,6 +30,8 @@ import Row from "../components/interface/Row";
 import DeleteModal from "../components/DeleteModal";
 import Loader from "../components/Loader";
 import NewBookModal from "../components/NewBookModal";
+import SearchBar from "../components/SearchBar";
+import AutocompleteOption from "../components/interface/AutocompleteOption";
 
 const columns: readonly Column[] = [
   { id: "name", label: "Başlık" },
@@ -67,16 +69,32 @@ export default function HomePage() {
     }
   };
 
+  useEffect(() => {
+    if(isLoader === true){
+      setIsNewBookModalOpen(false);
+      setIsDeleteModalOpen(false);
+    }
+  }, [isLoader]);
+
   return (
     <React.Fragment>
       <Head>
-        <title>Home - Nextron (with-material-ui)</title>
+        <title>Librarian</title>
       </Head>
       <Loader isOpen={isLoader} />
-      <NewBookModal isOpen={isNewBookModalOpen} close={() => setIsNewBookModalOpen(false)}/>
+      <NewBookModal
+        isOpen={isNewBookModalOpen}
+        close={() => setIsNewBookModalOpen(false)}
+        onClick={() => {
+          setIsLoader(true);
+        }}
+      />
       <DeleteModal
         book={rows.at(0)}
         isOpen={isDeleteModalOpen}
+        onClick={() => {
+          setIsLoader(true);
+        }}
         close={() => {
           setIsDeleteModalOpen(false);
         }}
@@ -105,28 +123,10 @@ export default function HomePage() {
           }}
         >
           {rows.length == 0 ? (
-            <EmptyList />
+            <EmptyList onClick={() => setIsNewBookModalOpen(true)} />
           ) : (
             <>
-              <OutlinedInput
-                color="primary"
-                placeholder="Kitap, yazar veya tür ara"
-                startAdornment={
-                  <InputAdornment position="start">
-                    <MagnifyingGlassIcon
-                      size={"1rem"}
-                      color="rgba(1, 88, 80, 0.4)"
-                    />
-                  </InputAdornment>
-                }
-                endAdornment={
-                  <InputAdornment position="end">
-                    <IconButton edge="end" size="small">
-                      <FunnelIcon size={"1.5rem"} color="#015850" />
-                    </IconButton>
-                  </InputAdornment>
-                }
-              />
+              <SearchBar options={[{name: "Kaşağı, Ömer Seyfettin", type: "name"}, {name: "Kaşağı, Ömer Seyfettin", type: "writer"},{name: "Kaşağı, Ömer Seyfettin", type: "type"}]} />
               <TableContainer sx={{ backgroundColor: "white", height: "100%" }}>
                 <Table stickyHeader>
                   <TableHead>
@@ -191,7 +191,11 @@ export default function HomePage() {
                                 </Box>
 
                                 <Box sx={{ width: "2rem" }}>
-                                  <IconButton edge="end" size="small" onClick={() => setIsDeleteModalOpen(true)}>
+                                  <IconButton
+                                    edge="end"
+                                    size="small"
+                                    onClick={() => setIsDeleteModalOpen(true)}
+                                  >
                                     <TrashIcon size="1.5rem" color="#FF0000" />
                                   </IconButton>
                                 </Box>

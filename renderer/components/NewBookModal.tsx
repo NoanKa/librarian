@@ -12,6 +12,7 @@ import { XCircleIcon } from "@phosphor-icons/react";
 
 type NewBookModalProps = {
   isOpen: boolean;
+  onClick: () => void;
   close: () => void;
 };
 
@@ -85,7 +86,7 @@ export default function NewBookModal(props: NewBookModalProps) {
                 gap={"0.62rem"}
               >
                 <Typography color={"#015850"}>Tür</Typography>
-                <Select value={""} onChange={() => {}} placeholder="Tür">
+                <Select value={""} onChange={() => {}}>
                   <MenuItem value="" disabled>
                     Tür
                   </MenuItem>
@@ -96,6 +97,7 @@ export default function NewBookModal(props: NewBookModalProps) {
               <Button
                 variant="contained"
                 sx={{ paddingX: "2.5rem", paddingY: "0.5rem" }}
+                onClick={props.onClick}
               >
                 Kaydet
               </Button>
