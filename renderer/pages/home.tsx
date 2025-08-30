@@ -125,9 +125,12 @@ export default function HomePage() {
             <>
               <SearchBar
                 options={[
-                  { name: "Kaşağı, Ömer Seyfettin", type: "name" },
-                  { name: "Kaşağı, Ömer Seyfettin", type: "writer" },
-                  { name: "Kaşağı, Ömer Seyfettin", type: "type" },
+                  { name: "Kaşağı, Ömer Seyfettin, Roman", type: "name" },
+                  {
+                    name: "Kaşağı, Ömer Seyfettin, Roman",
+                    type: "writer",
+                  },
+                  { name: "Kaşağı, Ömer Seyfettin, Roman", type: "type" },
                 ]}
                 setSelectedFilterType={setSelectedFilterType}
                 selectedFilterType={selectedFilterType}

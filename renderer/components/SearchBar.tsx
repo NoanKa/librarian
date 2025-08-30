@@ -48,6 +48,11 @@ export default function SearchBar(props: SearchBarProps) {
       value={value}
       onChange={(event, newValue) => setValue(newValue)}
       options={props.options}
+      sx={{
+        ":hover": {
+          borderColor: "#015850 !important",
+        },
+      }}
       renderInput={(params) => (
         <TextField
           {...params}
@@ -186,8 +191,16 @@ export default function SearchBar(props: SearchBarProps) {
               {option.name}
             </Typography>
             <Badge
-              sx={{ fontSize: "0.62rem", color: getType(option.type).color }}
-              badgeContent="Başlık"
+              sx={{
+                //   fontSize: "0.62rem",
+                color: getType(option.type).color,
+                borderColor: getType(option.type).color,
+                //   paddingX: "1rem",
+                //   paddingY: "0.5rem",
+                //   justifyContent: "center",
+                //   alignItems: "center",
+              }}
+              badgeContent={getType(option.type).name}
               variant="standard"
             />
           </Stack>

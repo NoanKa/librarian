@@ -32,6 +32,19 @@ const theme = createTheme({
     fontFamily: roboto.style.fontFamily,
   },
   components: {
+    MuiBadge: {
+      styleOverrides: {
+        badge: ({ theme }) => ({
+          border: "2px solid",
+          borderColor: theme.palette.background.paper,
+          padding: "0 4px",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          borderRadius: "0.12rem",
+        }),
+      },
+    },
     MuiButton: {
       styleOverrides: {
         root: {
