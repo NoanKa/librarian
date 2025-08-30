@@ -3,10 +3,7 @@ import Head from "next/head";
 import {
   Box,
   Button,
-  Grid,
   IconButton,
-  InputAdornment,
-  OutlinedInput,
   Pagination,
   Stack,
   Table,
@@ -20,8 +17,6 @@ import {
   ArrowCounterClockwiseIcon,
   BookIcon,
   BookOpenTextIcon,
-  FunnelIcon,
-  MagnifyingGlassIcon,
   TrashIcon,
 } from "@phosphor-icons/react";
 import EmptyList from "../components/EmptyList";
@@ -31,7 +26,6 @@ import DeleteModal from "../components/DeleteModal";
 import Loader from "../components/Loader";
 import NewBookModal from "../components/NewBookModal";
 import SearchBar from "../components/SearchBar";
-import AutocompleteOption from "../components/interface/AutocompleteOption";
 
 const columns: readonly Column[] = [
   { id: "name", label: "Başlık" },

@@ -1,6 +1,7 @@
 import {
   Autocomplete,
   Badge,
+  Button,
   IconButton,
   InputAdornment,
   Stack,
@@ -8,7 +9,7 @@ import {
   Typography,
 } from "@mui/material";
 import { FunnelIcon, MagnifyingGlassIcon } from "@phosphor-icons/react";
-import { useState } from "react";
+import { ReactNode, useEffect, useState } from "react";
 import AutocompleteOption from "./interface/AutocompleteOption";
 
 type SearchBarProps = {
@@ -17,10 +18,10 @@ type SearchBarProps = {
 
 export default function SearchBar(props: SearchBarProps) {
   const [value, setValue] = useState(null);
+  const [filterType, setFilterType] = useState<"filter" | "buttons" | "type">("filter");
+  const [selectedFilterType, setSelectedFilterType] = useState<"name" | "writer" | "type" | undefined>();
 
-  const getType: (type: string) => string = (
-    type
-  ) => {
+  const getType: (type: string) => string = (type) => {
     switch (type) {
       case "name":
         return "#015850";
@@ -30,6 +31,12 @@ export default function SearchBar(props: SearchBarProps) {
         return "#0009B0";
     }
   };
+
+  useEffect(() => {
+    if(selectedFilterType !== undefined){
+      setFilterType("type");
+    }
+  }, [selectedFilterType])
 
   return (
     <Autocomplete
@@ -57,9 +64,15 @@ export default function SearchBar(props: SearchBarProps) {
             ),
             endAdornment: (
               <InputAdornment position="end">
-                <IconButton edge="end" size="small">
+                {filterType === "filter" && (<IconButton edge="end" size="small" onClick={() => setFilterType("buttons")}>
                   <FunnelIcon size="1.5rem" color="#015850" />
-                </IconButton>
+                </IconButton>)}
+                {filterType === "buttons" && (<Stack direction={"row"} paddingX={"0.62rem"} gap={"0.62rem"}>
+          <Button variant="outlined" sx={{color: "#015850", border: "0.16rem solid #015850"}} onClick={() => setSelectedFilterType("name")}>BAŞLIK</Button>
+          <Button variant="outlined" sx={{color: "#B05200", border: "0.16rem solid #B05200"}} onClick={() => setSelectedFilterType("writer")}>YAZAR</Button>
+          <Button variant="outlined" sx={{color: "#0009B0", border: "0.16rem solid #0009B0"}} onClick={() => setSelectedFilterType("type")}>TÜR</Button>
+        </Stack>)}
+                {filterType === "type" && (<Button variant="outlined" sx={{color: "#015850", border: "0.16rem solid #015850"}} onClick={() => setFilterType("filter")}></Button>)}
               </InputAdornment>
             ),
           }}
