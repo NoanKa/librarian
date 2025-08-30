@@ -37,6 +37,16 @@ const theme = createTheme({
         root: {
           color: "#FFFFFF",
         },
+        outlined: ({ theme }) => ({
+          color: theme.palette.primary.main,
+          transition: "background-color 0.3s ease, color 0.3s ease",
+
+          "&:hover": {
+            backgroundColor: theme.palette.primary.main,
+            color: theme.palette.common.white,
+            border: `1px solid ${theme.palette.primary.main} !important`,
+          },
+        }),
         containedPrimary: {
           backgroundColor: "#015850",
         },

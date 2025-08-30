@@ -39,6 +39,9 @@ export default function HomePage() {
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState<boolean>(false);
   const [isNewBookModalOpen, setIsNewBookModalOpen] = useState<boolean>(false);
   const [isLoader, setIsLoader] = useState<boolean>(false);
+  const [selectedFilterType, setSelectedFilterType] = useState<
+    "name" | "writer" | "type" | undefined
+  >();
   const [selectedRow, setSelectedRow] = useState<Row>();
   const [rows, setRows] = useState<Row[]>([
     {
@@ -64,7 +67,7 @@ export default function HomePage() {
   };
 
   useEffect(() => {
-    if(isLoader === true){
+    if (isLoader === true) {
       setIsNewBookModalOpen(false);
       setIsDeleteModalOpen(false);
     }
@@ -120,7 +123,15 @@ export default function HomePage() {
             <EmptyList onClick={() => setIsNewBookModalOpen(true)} />
           ) : (
             <>
-              <SearchBar options={[{name: "Kaşağı, Ömer Seyfettin", type: "name"}, {name: "Kaşağı, Ömer Seyfettin", type: "writer"},{name: "Kaşağı, Ömer Seyfettin", type: "type"}]} />
+              <SearchBar
+                options={[
+                  { name: "Kaşağı, Ömer Seyfettin", type: "name" },
+                  { name: "Kaşağı, Ömer Seyfettin", type: "writer" },
+                  { name: "Kaşağı, Ömer Seyfettin", type: "type" },
+                ]}
+                setSelectedFilterType={setSelectedFilterType}
+                selectedFilterType={selectedFilterType}
+              />
               <TableContainer sx={{ backgroundColor: "white", height: "100%" }}>
                 <Table stickyHeader>
                   <TableHead>

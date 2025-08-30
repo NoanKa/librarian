@@ -9,34 +9,39 @@ import {
   Typography,
 } from "@mui/material";
 import { FunnelIcon, MagnifyingGlassIcon } from "@phosphor-icons/react";
-import { ReactNode, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import AutocompleteOption from "./interface/AutocompleteOption";
 
 type SearchBarProps = {
   options: AutocompleteOption[];
+  selectedFilterType: "name" | "writer" | "type" | undefined;
+  setSelectedFilterType: React.Dispatch<
+    React.SetStateAction<"name" | "writer" | "type" | undefined>
+  >;
 };
 
 export default function SearchBar(props: SearchBarProps) {
   const [value, setValue] = useState(null);
-  const [filterType, setFilterType] = useState<"filter" | "buttons" | "type">("filter");
-  const [selectedFilterType, setSelectedFilterType] = useState<"name" | "writer" | "type" | undefined>();
+  const [filterType, setFilterType] = useState<"filter" | "buttons" | "type">(
+    "filter"
+  );
 
-  const getType: (type: string) => string = (type) => {
+  const getType: (type: string) => { color: string; name: string } = (type) => {
     switch (type) {
       case "name":
-        return "#015850";
+        return { color: "#015850", name: "BAŞLIK" };
       case "writer":
-        return "#B05200";
+        return { color: "#B05200", name: "YAZAR" };
       case "type":
-        return "#0009B0";
+        return { color: "#0009B0", name: "TÜR" };
     }
   };
 
   useEffect(() => {
-    if(selectedFilterType !== undefined){
+    if (props.selectedFilterType !== undefined) {
       setFilterType("type");
     }
-  }, [selectedFilterType])
+  }, [props.selectedFilterType]);
 
   return (
     <Autocomplete
@@ -64,15 +69,105 @@ export default function SearchBar(props: SearchBarProps) {
             ),
             endAdornment: (
               <InputAdornment position="end">
-                {filterType === "filter" && (<IconButton edge="end" size="small" onClick={() => setFilterType("buttons")}>
-                  <FunnelIcon size="1.5rem" color="#015850" />
-                </IconButton>)}
-                {filterType === "buttons" && (<Stack direction={"row"} paddingX={"0.62rem"} gap={"0.62rem"}>
-          <Button variant="outlined" sx={{color: "#015850", border: "0.16rem solid #015850"}} onClick={() => setSelectedFilterType("name")}>BAŞLIK</Button>
-          <Button variant="outlined" sx={{color: "#B05200", border: "0.16rem solid #B05200"}} onClick={() => setSelectedFilterType("writer")}>YAZAR</Button>
-          <Button variant="outlined" sx={{color: "#0009B0", border: "0.16rem solid #0009B0"}} onClick={() => setSelectedFilterType("type")}>TÜR</Button>
-        </Stack>)}
-                {filterType === "type" && (<Button variant="outlined" sx={{color: "#015850", border: "0.16rem solid #015850"}} onClick={() => setFilterType("filter")}></Button>)}
+                {filterType === "filter" && (
+                  <IconButton
+                    edge="end"
+                    size="small"
+                    onClick={() => setFilterType("buttons")}
+                  >
+                    <FunnelIcon size="1.5rem" color="#015850" />
+                  </IconButton>
+                )}
+                {filterType === "buttons" && (
+                  <Stack direction={"row"} gap={"0.62rem"}>
+                    <Button
+                      variant="outlined"
+                      sx={{
+                        color: getType("name").color,
+                        border:
+                          "0.10rem solid " +
+                          getType("name").color +
+                          " !important",
+                        ":hover": {
+                          backgroundColor: getType("name").color,
+                          border:
+                            "0.10rem solid " +
+                            getType("name").color +
+                            " !important",
+                        },
+                      }}
+                      onClick={() => props.setSelectedFilterType("name")}
+                    >
+                      BAŞLIK
+                    </Button>
+                    <Button
+                      variant="outlined"
+                      sx={{
+                        color: getType("writer").color,
+                        border:
+                          "0.10rem solid " +
+                          getType("writer").color +
+                          " !important",
+                        ":hover": {
+                          backgroundColor: getType("writer").color,
+                          border:
+                            "0.10rem solid " +
+                            getType("writer").color +
+                            " !important",
+                        },
+                      }}
+                      onClick={() => props.setSelectedFilterType("writer")}
+                    >
+                      YAZAR
+                    </Button>
+                    <Button
+                      variant="outlined"
+                      sx={{
+                        color: getType("type").color,
+                        border:
+                          "0.10rem solid " +
+                          getType("type").color +
+                          " !important",
+                        ":hover": {
+                          backgroundColor: getType("type").color,
+                          border:
+                            "0.10rem solid " +
+                            getType("type").color +
+                            " !important",
+                        },
+                      }}
+                      onClick={() => props.setSelectedFilterType("type")}
+                    >
+                      TÜR
+                    </Button>
+                  </Stack>
+                )}
+                {filterType === "type" && (
+                  <Button
+                    variant="outlined"
+                    sx={{
+                      color: getType(props.selectedFilterType).color,
+                      border:
+                        "0.10rem solid " +
+                        getType(props.selectedFilterType).color +
+                        " !important",
+                      ":hover": {
+                        backgroundColor: getType(props.selectedFilterType)
+                          .color,
+                        border:
+                          "0.10rem solid " +
+                          getType(props.selectedFilterType).color +
+                          " !important",
+                      },
+                    }}
+                    onClick={() => {
+                      setFilterType("filter");
+                      props.setSelectedFilterType(undefined);
+                    }}
+                  >
+                    {getType(props.selectedFilterType).name}
+                  </Button>
+                )}
               </InputAdornment>
             ),
           }}
@@ -87,11 +182,11 @@ export default function SearchBar(props: SearchBarProps) {
             paddingLeft={"1.70rem"}
             gap={"2rem"}
           >
-            <Typography color={getType(option.type)} fontWeight={"bold"}>
+            <Typography color={getType(option.type).color} fontWeight={"bold"}>
               {option.name}
             </Typography>
             <Badge
-              sx={{ fontSize: "0.62rem", color: getType(option.type)}}
+              sx={{ fontSize: "0.62rem", color: getType(option.type).color }}
               badgeContent="Başlık"
               variant="standard"
             />
