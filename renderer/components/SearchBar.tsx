@@ -1,6 +1,7 @@
 import {
   Autocomplete,
   Badge,
+  Box,
   Button,
   IconButton,
   InputAdornment,
@@ -26,7 +27,7 @@ export default function SearchBar(props: SearchBarProps) {
     "filter"
   );
 
-  const getType: (type: string) => { color: string; name: string } = (type) => {
+  const getType = (type: string) => {
     switch (type) {
       case "name":
         return { color: "#015850", name: "BAŞLIK" };
@@ -190,19 +191,23 @@ export default function SearchBar(props: SearchBarProps) {
             <Typography color={getType(option.type).color} fontWeight={"bold"}>
               {option.name}
             </Typography>
-            <Badge
+            <Box
               sx={{
-                //   fontSize: "0.62rem",
-                color: getType(option.type).color,
+                border: "0.06rem solid",
                 borderColor: getType(option.type).color,
-                //   paddingX: "1rem",
-                //   paddingY: "0.5rem",
-                //   justifyContent: "center",
-                //   alignItems: "center",
+                color: getType(option.type).color,
+                fontWeight: "bold",
+                fontSize: "0.72rem",
+                borderRadius: "0.12rem",
+                px: "0.37em",
+                py: "0.06rem",
+                display: "flex",
+                width: "3rem",
+                justifyContent: "center",
               }}
-              badgeContent={getType(option.type).name}
-              variant="standard"
-            />
+            >
+              {getType(option.type).name}
+            </Box>
           </Stack>
         </li>
       )}

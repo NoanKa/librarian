@@ -53,9 +53,7 @@ export default function HomePage() {
     } as Row,
   ]);
 
-  const getStatus: (status: number) => { text: string; color: string } = (
-    status
-  ) => {
+  const getStatus = (status: number) => {
     switch (status) {
       case 0:
         return { text: "Okunmadı", color: "#B05200" };
@@ -64,6 +62,10 @@ export default function HomePage() {
       case 2:
         return { text: "Tamamlandı", color: "#015850" };
     }
+  };
+
+  const changeStatus = (book: Row, status: "start" | "finish" | "revert") => {
+    // your logic
   };
 
   useEffect(() => {
@@ -86,16 +88,18 @@ export default function HomePage() {
           setIsLoader(true);
         }}
       />
-      <DeleteModal
-        book={rows.at(0)}
-        isOpen={isDeleteModalOpen}
-        onClick={() => {
-          setIsLoader(true);
-        }}
-        close={() => {
-          setIsDeleteModalOpen(false);
-        }}
-      />
+      {selectedRow && (
+        <DeleteModal
+          book={selectedRow}
+          isOpen={isDeleteModalOpen}
+          onClick={() => {
+            setIsLoader(true);
+          }}
+          close={() => {
+            setIsDeleteModalOpen(false);
+          }}
+        />
+      )}
       <Box
         sx={{
           display: "flex",
@@ -174,7 +178,13 @@ export default function HomePage() {
                               >
                                 <Box sx={{ width: "2rem" }}>
                                   {row.status === 1 && (
-                                    <IconButton edge="end" size="small">
+                                    <IconButton
+                                      edge="end"
+                                      size="small"
+                                      onClick={() =>
+                                        changeStatus(row, "revert")
+                                      }
+                                    >
                                       <ArrowCounterClockwiseIcon
                                         size="1.5rem"
                                         color="#B05200"
@@ -185,14 +195,24 @@ export default function HomePage() {
 
                                 <Box sx={{ width: "2rem" }}>
                                   {row.status === 0 ? (
-                                    <IconButton edge="end" size="small">
+                                    <IconButton
+                                      edge="end"
+                                      size="small"
+                                      onClick={() => changeStatus(row, "start")}
+                                    >
                                       <BookOpenTextIcon
                                         size="1.5rem"
                                         color="#015850"
                                       />
                                     </IconButton>
                                   ) : row.status === 1 ? (
-                                    <IconButton edge="end" size="small">
+                                    <IconButton
+                                      edge="end"
+                                      size="small"
+                                      onClick={() =>
+                                        changeStatus(row, "finish")
+                                      }
+                                    >
                                       <BookIcon size="1.5rem" color="#015850" />
                                     </IconButton>
                                   ) : null}
@@ -202,7 +222,10 @@ export default function HomePage() {
                                   <IconButton
                                     edge="end"
                                     size="small"
-                                    onClick={() => setIsDeleteModalOpen(true)}
+                                    onClick={() => {
+                                      setSelectedRow(row);
+                                      setIsDeleteModalOpen(true);
+                                    }}
                                   >
                                     <TrashIcon size="1.5rem" color="#FF0000" />
                                   </IconButton>
