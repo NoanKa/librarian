@@ -19,10 +19,12 @@ type SearchBarProps = {
   setSelectedFilterType: React.Dispatch<
     React.SetStateAction<"name" | "writer" | "type" | undefined>
   >;
+  value: AutocompleteOption;
+  setValue: React.Dispatch<React.SetStateAction<AutocompleteOption>>;
 };
 
 export default function SearchBar(props: SearchBarProps) {
-  const [value, setValue] = useState(null);
+  const [inputValue, setInputValue] = useState("");
   const [filterType, setFilterType] = useState<"filter" | "buttons" | "type">(
     "filter"
   );
@@ -44,11 +46,30 @@ export default function SearchBar(props: SearchBarProps) {
     }
   }, [props.selectedFilterType]);
 
+  useEffect(() => {
+    if (props.value) {
+      console.log(props.value);
+    }
+  }, [props.value]);
+
+  useEffect(() => {
+    if (inputValue) {
+      console.log(inputValue);
+    }
+  }, [inputValue]);
+
   return (
     <Autocomplete
-      value={value}
-      onChange={(event, newValue) => setValue(newValue)}
+      value={props.value}
+      onChange={(_event, newValue) => props.setValue(newValue)}
       options={props.options}
+      getOptionLabel={(option) => option.name || ""}
+      inputValue={inputValue}
+      onInputChange={(event, newInputValue, reason) => {
+        if (reason === "input" || reason === "clear") {
+          setInputValue(newInputValue);
+        }
+      }}
       sx={{
         ":hover": {
           borderColor: "#015850 !important",
@@ -66,6 +87,10 @@ export default function SearchBar(props: SearchBarProps) {
           variant="outlined"
           color="primary"
           placeholder="Kitap, yazar veya tür ara"
+          onFocus={() => {
+            setInputValue("");
+            props.setValue(undefined);
+          }}
           InputProps={{
             ...params.InputProps,
             startAdornment: (

@@ -60,8 +60,16 @@ const theme = createTheme({
         root: {
           color: "#015850",
           borderColor: "rgba(1, 88, 80, 0.4)",
-          "&.Mui-focused": {
+          "& .MuiOutlinedInput-notchedOutline": {
+            borderColor: "rgba(1, 88, 80, 0.4)",
+          },
+          "&:hover .MuiOutlinedInput-notchedOutline": {
+            borderColor: "rgba(1, 88, 80, 0.4)",
+          },
+          "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
             borderColor: "#015850",
+          },
+          "&.Mui-focused": {
             boxShadow: "none",
           },
         },

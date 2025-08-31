@@ -26,6 +26,7 @@ import DeleteModal from "../components/DeleteModal";
 import Loader from "../components/Loader";
 import NewBookModal from "../components/NewBookModal";
 import SearchBar from "../components/SearchBar";
+import AutocompleteOption from "../components/interface/AutocompleteOption";
 
 const columns: readonly Column[] = [
   { id: "name", label: "Başlık" },
@@ -42,6 +43,8 @@ export default function HomePage() {
   const [selectedFilterType, setSelectedFilterType] = useState<
     "name" | "writer" | "type" | undefined
   >();
+  const [autocompleteValue, setAutocompleteValue] =
+    useState<AutocompleteOption>();
   const [selectedRow, setSelectedRow] = useState<Row>();
   const [rows, setRows] = useState<Row[]>([
     {
@@ -84,6 +87,7 @@ export default function HomePage() {
       <NewBookModal
         isOpen={isNewBookModalOpen}
         close={() => setIsNewBookModalOpen(false)}
+        types={["Roman", "Bilim Kurgu", "Tarih"]}
         onClick={() => {
           setIsLoader(true);
         }}
@@ -129,15 +133,26 @@ export default function HomePage() {
             <>
               <SearchBar
                 options={[
-                  { name: "Kaşağı, Ömer Seyfettin, Roman", type: "name" },
                   {
+                    id: 1,
+                    name: "Kaşağı, Ömer Seyfettin, Roman",
+                    type: "name",
+                  },
+                  {
+                    id: 2,
                     name: "Kaşağı, Ömer Seyfettin, Roman",
                     type: "writer",
                   },
-                  { name: "Kaşağı, Ömer Seyfettin, Roman", type: "type" },
+                  {
+                    id: 3,
+                    name: "Kaşağı, Ömer Seyfettin, Roman",
+                    type: "type",
+                  },
                 ]}
                 setSelectedFilterType={setSelectedFilterType}
                 selectedFilterType={selectedFilterType}
+                setValue={setAutocompleteValue}
+                value={autocompleteValue}
               />
               <TableContainer sx={{ backgroundColor: "white", height: "100%" }}>
                 <Table stickyHeader>
