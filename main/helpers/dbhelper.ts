@@ -1,20 +1,69 @@
 // main/ipc/dbHandlers.ts
 import { ipcMain } from "electron";
 import { getDB } from "../db/dbconf";
+import { Book } from "../types/Book";
 
 export function registerDBHelpers() {
-  ipcMain.handle("db:getUsers", async () => {
+  ipcMain.handle("db:getBooks", async () => {
     const db = getDB();
-    return db.data.users;
+    await db.read();
+
+    return db.data?.books ?? [];
   });
 
-  //   ipcMain.handle(
-  //     "db:addUser",
-  //     async (_event, user: { id: number; name: string }) => {
-  //       const db = getDB();
-  //       db.data.users.push(user);
-  //       await db.write();
-  //       return user;
-  //     }
-  //   );
+  ipcMain.handle("db:addBook", async (_event, book: Book) => {
+    const db = getDB();
+    await db.read();
+
+    const maxId =
+      db.data?.books.length > 0
+        ? Math.max(...db.data?.books.map((b: Book) => b.id ?? 0))
+        : 0;
+
+    const newBook: Book = {
+      id: maxId + 1,
+      ...book,
+    };
+
+    db.data?.books.push(newBook);
+    await db.write();
+
+    return book;
+  });
+
+  ipcMain.handle(
+    "db:updateBookStatus",
+    async (_event, id: number, status: number) => {
+      const db = getDB();
+      await db.read();
+
+      const book = db.data?.books.find((b: any) => b.id === id);
+      if (!book) throw new Error("Book not found");
+
+      book["status"] = status;
+      await db.write();
+
+      return book;
+    }
+  );
+
+  ipcMain.handle("db:deleteBook", async (_event, id: number) => {
+    const db = getDB();
+    await db.read();
+
+    const index = db.data?.books.findIndex((b: Book) => b.id === id);
+    if (index === -1) throw new Error("Book not found");
+
+    const [deletedBook] = db.data?.books.splice(index, 1);
+
+    await db.write();
+    return deletedBook;
+  });
+
+  ipcMain.handle("db:getTypes", async () => {
+    const db = getDB();
+    await db.read();
+
+    return db.data?.books.map((book) => book.type);
+  });
 }

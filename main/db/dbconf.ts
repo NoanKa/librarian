@@ -3,24 +3,30 @@ import { join } from "path";
 import { app } from "electron";
 import { Low } from "lowdb";
 import { JSONFile } from "lowdb/node";
+import { Book } from "../types/Book";
+import { existsSync, mkdirSync } from "fs";
 
-// Define your data shape
 type Data = {
-  users: { id: number; name: string }[];
+  books: Book[];
 };
 
-// Default values
-const defaultData: Data = { users: [] };
+const defaultData: Data = { books: [] };
 
 let db: Low<Data>;
 
 export async function initDB() {
-  const file = join(app.getPath("userData"), "library.json"); // stored in OS-specific userData folder
+  const file = join(app.getPath("userData"), "library.json");
+
+  const folder = app.getPath("userData");
+  if (!existsSync(folder)) {
+    mkdirSync(folder, { recursive: true });
+  }
+
   const adapter = new JSONFile<Data>(file);
   db = new Low<Data>(adapter, defaultData);
 
   await db.read();
-  db.data ||= defaultData; // if file is empty, initialize
+  db.data ||= defaultData;
   await db.write();
 
   return db;

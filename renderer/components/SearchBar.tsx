@@ -10,7 +10,7 @@ import {
   Typography,
 } from "@mui/material";
 import { FunnelIcon, MagnifyingGlassIcon } from "@phosphor-icons/react";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import AutocompleteOption from "./interface/AutocompleteOption";
 
 type SearchBarProps = {
@@ -46,28 +46,19 @@ export default function SearchBar(props: SearchBarProps) {
     }
   }, [props.selectedFilterType]);
 
-  useEffect(() => {
-    if (props.value) {
-      console.log(props.value);
-    }
-  }, [props.value]);
-
-  useEffect(() => {
-    if (inputValue) {
-      console.log(inputValue);
-    }
-  }, [inputValue]);
-
   return (
     <Autocomplete
-      value={props.value}
-      onChange={(_event, newValue) => props.setValue(newValue)}
       options={props.options}
       getOptionLabel={(option) => option.name || ""}
+      value={props.value}
+      onChange={(_event, value) => {
+        props.setValue(value);
+        setInputValue(value.name);
+      }}
       inputValue={inputValue}
-      onInputChange={(event, newInputValue, reason) => {
+      onInputChange={(_event, value, reason) => {
         if (reason === "input" || reason === "clear") {
-          setInputValue(newInputValue);
+          setInputValue(value);
         }
       }}
       sx={{
@@ -88,8 +79,8 @@ export default function SearchBar(props: SearchBarProps) {
           color="primary"
           placeholder="Kitap, yazar veya tür ara"
           onFocus={() => {
-            setInputValue("");
             props.setValue(undefined);
+            setInputValue("");
           }}
           InputProps={{
             ...params.InputProps,
