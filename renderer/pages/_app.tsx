@@ -6,6 +6,7 @@ import { ThemeProvider } from "@mui/material/styles";
 import CssBaseline from "@mui/material/CssBaseline";
 import theme from "../theme/theme";
 import "../style/global.css";
+import { SnackbarProvider } from "notistack";
 
 export default function MyApp(props: AppProps) {
   const { Component, pageProps } = props;
@@ -15,8 +16,10 @@ export default function MyApp(props: AppProps) {
         <meta name="viewport" content="initial-scale=1, width=device-width" />
       </Head>
       <ThemeProvider theme={theme}>
-        <CssBaseline />
-        <Component {...pageProps} />
+        <SnackbarProvider maxSnack={3} autoHideDuration={3000}>
+          <CssBaseline />
+          <Component {...pageProps} />
+        </SnackbarProvider>
       </ThemeProvider>
     </AppCacheProvider>
   );

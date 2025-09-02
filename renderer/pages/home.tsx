@@ -27,6 +27,7 @@ import Loader from "../components/Loader";
 import NewBookModal from "../components/NewBookModal";
 import SearchBar from "../components/SearchBar";
 import AutocompleteOption from "../components/interface/AutocompleteOption";
+import { useSnackbar } from "notistack";
 
 const columns: readonly Column[] = [
   { id: "name", label: "Başlık" },
@@ -37,6 +38,7 @@ const columns: readonly Column[] = [
 ];
 
 export default function HomePage() {
+  const { enqueueSnackbar } = useSnackbar();
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState<boolean>(false);
   const [isNewBookModalOpen, setIsNewBookModalOpen] = useState<boolean>(false);
   const [isLoader, setIsLoader] = useState<boolean>(false);
@@ -55,6 +57,19 @@ export default function HomePage() {
       status: 0,
     } as Row,
   ]);
+
+  async function asyncFunc<T>(method: () => Promise<T>): Promise<T> {
+    setIsLoader(true);
+
+    try {
+      const [result] = await Promise.all([method(), sleep(2000)]);
+      return result;
+    } catch (err) {
+      enqueueSnackbar(err, { variant: "error" });
+    } finally {
+      setIsLoader(false);
+    }
+  }
 
   const getStatus = (status: number) => {
     switch (status) {
@@ -77,6 +92,12 @@ export default function HomePage() {
       setIsDeleteModalOpen(false);
     }
   }, [isLoader]);
+
+  useEffect(() => {
+    asyncFunc(window.db.getBooks());
+  }, []);
+
+  useEffect(() => {}, []);
 
   return (
     <React.Fragment>
@@ -271,4 +292,7 @@ export default function HomePage() {
       </Box>
     </React.Fragment>
   );
+}
+function sleep(arg0: number): any {
+  throw new Error("Function not implemented.");
 }
