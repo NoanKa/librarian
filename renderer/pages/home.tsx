@@ -21,13 +21,14 @@ import {
 } from "@phosphor-icons/react";
 import EmptyList from "../components/EmptyList";
 import Column from "../components/interface/Column";
-import Row from "../components/interface/Row";
 import DeleteModal from "../components/DeleteModal";
 import Loader from "../components/Loader";
 import NewBookModal from "../components/NewBookModal";
 import SearchBar from "../components/SearchBar";
 import AutocompleteOption from "../components/interface/AutocompleteOption";
 import { useSnackbar } from "notistack";
+import { Book } from "../../main/types/Book";
+import { sleep } from "../utils/methods";
 
 const columns: readonly Column[] = [
   { id: "name", label: "Başlık" },
@@ -47,16 +48,9 @@ export default function HomePage() {
   >();
   const [autocompleteValue, setAutocompleteValue] =
     useState<AutocompleteOption>();
-  const [selectedRow, setSelectedRow] = useState<Row>();
-  const [rows, setRows] = useState<Row[]>([
-    {
-      id: 1,
-      name: "Kaşağı",
-      writer: "Ömer Seyfettin",
-      type: "Roman",
-      status: 0,
-    } as Row,
-  ]);
+  const [selectedRow, setSelectedRow] = useState<Book>();
+  const [rows, setRows] = useState<Book[]>();
+  const [bookTypes, setBookTypes] = useState<string[]>();
 
   async function asyncFunc<T>(method: () => Promise<T>): Promise<T> {
     setIsLoader(true);
@@ -82,9 +76,18 @@ export default function HomePage() {
     }
   };
 
-  const changeStatus = (book: Row, status: "start" | "finish" | "revert") => {
+  const changeStatus = (book: Book, status: "start" | "finish" | "revert") => {
     // your logic
   };
+
+  useEffect(() => {
+    asyncFunc(() => window.db.getBooks()).then((books: Book[]) => {
+      if (books) setRows(books);
+    });
+    asyncFunc(() => window.db.getTypes()).then((types: string[]) => {
+      if (types) setBookTypes(types);
+    });
+  }, []);
 
   useEffect(() => {
     if (isLoader === true) {
@@ -92,12 +95,6 @@ export default function HomePage() {
       setIsDeleteModalOpen(false);
     }
   }, [isLoader]);
-
-  useEffect(() => {
-    asyncFunc(window.db.getBooks());
-  }, []);
-
-  useEffect(() => {}, []);
 
   return (
     <React.Fragment>
@@ -108,7 +105,7 @@ export default function HomePage() {
       <NewBookModal
         isOpen={isNewBookModalOpen}
         close={() => setIsNewBookModalOpen(false)}
-        types={["Roman", "Bilim Kurgu", "Tarih"]}
+        types={bookTypes}
         onClick={() => {
           setIsLoader(true);
         }}
@@ -148,7 +145,7 @@ export default function HomePage() {
             height: "100%",
           }}
         >
-          {rows.length == 0 ? (
+          {!(rows?.length > 0) ? (
             <EmptyList onClick={() => setIsNewBookModalOpen(true)} />
           ) : (
             <>
@@ -187,7 +184,7 @@ export default function HomePage() {
                   <TableBody>
                     {rows
                       // .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                      .map((row) => {
+                      ?.map((row) => {
                         let status = getStatus(row.status);
                         return (
                           <TableRow role="checkbox" tabIndex={-1} key={row.id}>
@@ -292,7 +289,4 @@ export default function HomePage() {
       </Box>
     </React.Fragment>
   );
-}
-function sleep(arg0: number): any {
-  throw new Error("Function not implemented.");
 }

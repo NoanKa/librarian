@@ -17,7 +17,7 @@ const handler = {
 };
 
 contextBridge.exposeInMainWorld("ipc", handler);
-contextBridge.exposeInMainWorld("dbAPI", {
+contextBridge.exposeInMainWorld("db", {
   getBooks: () => ipcRenderer.invoke("db:getBooks"),
   addBook: (book: Book) => ipcRenderer.invoke("db:addBook", book),
   updateBookStatus: (id: number, status: number) =>
