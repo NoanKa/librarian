@@ -28,7 +28,8 @@ import SearchBar from "../components/SearchBar";
 import AutocompleteOption from "../components/interface/AutocompleteOption";
 import { useSnackbar } from "notistack";
 import { Book } from "../../main/types/Book";
-import { sleep } from "../utils/methods";
+import { convert, sleep } from "../utils/methods";
+import NewBook from "../components/interface/NewBook";
 
 const columns: readonly Column[] = [
   { id: "name", label: "Başlık" },
@@ -51,6 +52,7 @@ export default function HomePage() {
   const [selectedRow, setSelectedRow] = useState<Book>();
   const [rows, setRows] = useState<Book[]>();
   const [bookTypes, setBookTypes] = useState<string[]>();
+  const [newBook, setNewBook] = useState<NewBook>();
 
   async function asyncFunc<T>(method: () => Promise<T>): Promise<T> {
     setIsLoader(true);
@@ -106,8 +108,14 @@ export default function HomePage() {
         isOpen={isNewBookModalOpen}
         close={() => setIsNewBookModalOpen(false)}
         types={bookTypes}
+        newBook={newBook}
+        setNewBook={setNewBook}
         onClick={() => {
-          setIsLoader(true);
+          asyncFunc(() => window.db.addBook(convert(newBook))).then(
+            (newBook: Book) => {
+              if (newBook) window.db.getBooks();
+            }
+          );
         }}
       />
       {selectedRow && (

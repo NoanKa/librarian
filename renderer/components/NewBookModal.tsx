@@ -2,10 +2,8 @@ import {
   Autocomplete,
   Button,
   IconButton,
-  MenuItem,
   OutlinedInput,
   Paper,
-  Select,
   Stack,
   TextField,
   Typography,
@@ -19,14 +17,15 @@ type NewBookModalProps = {
   onClick: () => void;
   close: () => void;
   types: string[];
+  newBook: NewBook;
+  setNewBook: React.Dispatch<React.SetStateAction<NewBook>>;
 };
 
 export default function NewBookModal(props: NewBookModalProps) {
-  const [newBook, setNewBook] = useState<NewBook>();
   const [inputType, setInputType] = useState("");
 
   const handleClose = () => {
-    setNewBook(undefined);
+    props.setNewBook(undefined);
     props.close();
   };
 
@@ -85,9 +84,9 @@ export default function NewBookModal(props: NewBookModalProps) {
                 <Typography color={"#015850"}>Başlık</Typography>
                 <OutlinedInput
                   placeholder="Başlık"
-                  value={newBook?.name}
+                  value={props.newBook?.name}
                   onChange={(e) => {
-                    setNewBook((prev) => ({
+                    props.setNewBook((prev) => ({
                       ...prev,
                       name: e.target.value,
                     }));
@@ -102,9 +101,9 @@ export default function NewBookModal(props: NewBookModalProps) {
                 <Typography color={"#015850"}>Yazar</Typography>
                 <OutlinedInput
                   placeholder="Yazar"
-                  value={newBook?.writer}
+                  value={props.newBook?.writer}
                   onChange={(e) => {
-                    setNewBook((prev) => ({
+                    props.setNewBook((prev) => ({
                       ...prev,
                       writer: e.target.value,
                     }));
@@ -125,10 +124,13 @@ export default function NewBookModal(props: NewBookModalProps) {
                   filterOptions={(options) => options}
                   popupIcon={<CaretDownIcon />}
                   forcePopupIcon={props.types.length > 0 ? true : false}
-                  value={newBook?.type ?? ""}
+                  value={props.newBook?.type ?? ""}
                   inputValue={inputType}
                   onChange={(_event, value) => {
-                    setNewBook((prev) => ({ ...prev, type: value ?? "" }));
+                    props.setNewBook((prev) => ({
+                      ...prev,
+                      type: value ?? "",
+                    }));
                     setInputType(value ?? "");
                   }}
                   onInputChange={(_event, value) => {
@@ -146,11 +148,11 @@ export default function NewBookModal(props: NewBookModalProps) {
                 sx={{ paddingX: "2.5rem", paddingY: "0.5rem" }}
                 onClick={props.onClick}
                 disabled={
-                  !newBook ||
+                  !props.newBook ||
                   !(
-                    newBook.name?.trim() &&
-                    newBook.writer?.trim() &&
-                    newBook.type?.trim()
+                    props.newBook.name?.trim() &&
+                    props.newBook.writer?.trim() &&
+                    props.newBook.type?.trim()
                   )
                 }
               >
