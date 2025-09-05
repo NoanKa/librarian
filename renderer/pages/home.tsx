@@ -126,7 +126,16 @@ export default function HomePage() {
           book={selectedRow}
           isOpen={isDeleteModalOpen}
           onClick={() => {
-            setIsLoader(true);
+            asyncFunc(() => window.db.deleteBook(selectedRow.id)).then(
+              (deletedBook: Book) => {
+                if (deletedBook) {
+                  window.db.getBooks().then((books: Book[]) => {
+                    if (books) setRows(books);
+                  });
+                  enqueueSnackbar("Kitap Kaldırıldı", { variant: "success" });
+                }
+              }
+            );
           }}
           close={() => {
             setIsDeleteModalOpen(false);
@@ -182,7 +191,7 @@ export default function HomePage() {
                   switch (selectedFilterType) {
                     case "name":
                       return (
-                        book.name.includes(autocompleteValue.name) &&
+                        book.name.includes(autocompleteValue?.name) &&
                         ({
                           id: book.id,
                           name: book.name,
@@ -193,7 +202,7 @@ export default function HomePage() {
                       );
                     case "writer":
                       return (
-                        book.writer.includes(autocompleteValue.writer) &&
+                        book.writer.includes(autocompleteValue?.writer) &&
                         ({
                           id: book.id,
                           name: book.name,
@@ -204,7 +213,7 @@ export default function HomePage() {
                       );
                     case "type":
                       return (
-                        book.type.includes(autocompleteValue.type) &&
+                        book.type.includes(autocompleteValue?.type) &&
                         ({
                           id: book.id,
                           name: book.name,

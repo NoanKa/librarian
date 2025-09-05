@@ -64,6 +64,6 @@ export function registerDBHelpers() {
     const db = getDB();
     await db.read();
 
-    return db.data?.books.map((book) => book.type);
+    return Array.from(new Set(db.data?.books.map((book) => book.type)));
   });
 }

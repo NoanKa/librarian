@@ -9,7 +9,7 @@ import {
   Typography,
 } from "@mui/material";
 import { CaretDownIcon, XCircleIcon } from "@phosphor-icons/react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import NewBook from "./interface/NewBook";
 
 type NewBookModalProps = {

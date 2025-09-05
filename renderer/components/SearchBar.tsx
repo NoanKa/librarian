@@ -19,8 +19,8 @@ type SearchBarProps = {
   setSelectedFilterType: React.Dispatch<
     React.SetStateAction<"name" | "writer" | "type" | undefined>
   >;
-  value: AutocompleteOption;
-  setValue: React.Dispatch<React.SetStateAction<AutocompleteOption>>;
+  value: AutocompleteOption | null;
+  setValue: React.Dispatch<React.SetStateAction<AutocompleteOption | null>>;
 };
 
 export default function SearchBar(props: SearchBarProps) {
@@ -49,11 +49,15 @@ export default function SearchBar(props: SearchBarProps) {
   return (
     <Autocomplete
       options={props.options}
-      getOptionLabel={(option) => option.name || ""}
-      value={props.value}
+      getOptionLabel={(option) => option?.name || ""}
+      value={props.value || null}
       onChange={(_event, value) => {
         props.setValue(value);
-        setInputValue(value.name + ", " + value.writer + ", " + value.type);
+        if (value) {
+          setInputValue(`${value.name}, ${value.writer}, ${value.type}`);
+        } else {
+          setInputValue("");
+        }
       }}
       inputValue={inputValue}
       onInputChange={(_event, value, reason) => {
@@ -168,17 +172,17 @@ export default function SearchBar(props: SearchBarProps) {
                   <Button
                     variant="outlined"
                     sx={{
-                      color: getType(props.selectedFilterType).color,
+                      color: getType(props.selectedFilterType)?.color,
                       border:
                         "0.10rem solid " +
-                        getType(props.selectedFilterType).color +
+                        getType(props.selectedFilterType)?.color +
                         " !important",
                       ":hover": {
                         backgroundColor: getType(props.selectedFilterType)
-                          .color,
+                          ?.color,
                         border:
                           "0.10rem solid " +
-                          getType(props.selectedFilterType).color +
+                          getType(props.selectedFilterType)?.color +
                           " !important",
                       },
                     }}
@@ -204,14 +208,17 @@ export default function SearchBar(props: SearchBarProps) {
             paddingLeft={"1.70rem"}
             gap={"2rem"}
           >
-            <Typography color={getType(option.type).color} fontWeight={"bold"}>
-              {option.name + ", " + option.writer + ", " + option.type}
+            <Typography
+              color={getType(option?.type)?.color}
+              fontWeight={"bold"}
+            >
+              {option?.name + ", " + option?.writer + ", " + option?.type}
             </Typography>
             <Box
               sx={{
                 border: "0.06rem solid",
-                borderColor: getType(option.type).color,
-                color: getType(option.type).color,
+                borderColor: getType(option?.type)?.color,
+                color: getType(option?.type)?.color,
                 fontWeight: "bold",
                 fontSize: "0.72rem",
                 borderRadius: "0.12rem",
@@ -222,7 +229,7 @@ export default function SearchBar(props: SearchBarProps) {
                 justifyContent: "center",
               }}
             >
-              {getType(option.type).name}
+              {getType(option?.type)?.name}
             </Box>
           </Stack>
         </li>
