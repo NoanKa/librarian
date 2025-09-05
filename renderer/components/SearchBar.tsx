@@ -53,7 +53,7 @@ export default function SearchBar(props: SearchBarProps) {
       value={props.value}
       onChange={(_event, value) => {
         props.setValue(value);
-        setInputValue(value.name);
+        setInputValue(value.name + ", " + value.writer + ", " + value.type);
       }}
       inputValue={inputValue}
       onInputChange={(_event, value, reason) => {
@@ -205,7 +205,7 @@ export default function SearchBar(props: SearchBarProps) {
             gap={"2rem"}
           >
             <Typography color={getType(option.type).color} fontWeight={"bold"}>
-              {option.name}
+              {option.name + ", " + option.writer + ", " + option.type}
             </Typography>
             <Box
               sx={{

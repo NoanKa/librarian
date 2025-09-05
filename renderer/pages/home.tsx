@@ -31,6 +31,8 @@ import { Book } from "../../main/types/Book";
 import { convert, sleep } from "../utils/methods";
 import NewBook from "../components/interface/NewBook";
 
+const pageSize = 5;
+
 const columns: readonly Column[] = [
   { id: "name", label: "Başlık" },
   { id: "writer", label: "Yazar" },
@@ -53,6 +55,7 @@ export default function HomePage() {
   const [rows, setRows] = useState<Book[]>();
   const [bookTypes, setBookTypes] = useState<string[]>();
   const [newBook, setNewBook] = useState<NewBook>();
+  const [page, setPage] = useState<number>(1);
 
   async function asyncFunc<T>(method: () => Promise<T>): Promise<T> {
     setIsLoader(true);
@@ -158,23 +161,60 @@ export default function HomePage() {
           ) : (
             <>
               <SearchBar
-                options={[
-                  {
-                    id: 1,
-                    name: "Kaşağı, Ömer Seyfettin, Roman",
-                    type: "name",
-                  },
-                  {
-                    id: 2,
-                    name: "Kaşağı, Ömer Seyfettin, Roman",
-                    type: "writer",
-                  },
-                  {
-                    id: 3,
-                    name: "Kaşağı, Ömer Seyfettin, Roman",
-                    type: "type",
-                  },
-                ]}
+                // options={[
+                //   {
+                //     id: 1,
+                //     name: "Kaşağı, Ömer Seyfettin, Roman",
+                //     type: "name",
+                //   },
+                //   {
+                //     id: 2,
+                //     name: "Kaşağı, Ömer Seyfettin, Roman",
+                //     type: "writer",
+                //   },
+                //   {
+                //     id: 3,
+                //     name: "Kaşağı, Ömer Seyfettin, Roman",
+                //     type: "type",
+                //   },
+                // ]}
+                options={rows.flatMap((book) => {
+                  switch (selectedFilterType) {
+                    case "name":
+                      return (
+                        book.name.includes(autocompleteValue.name) &&
+                        ({
+                          id: book.id,
+                          name: book.name,
+                          writer: book.writer,
+                          type: book.type,
+                          searchType: selectedFilterType,
+                        } as AutocompleteOption)
+                      );
+                    case "writer":
+                      return (
+                        book.writer.includes(autocompleteValue.writer) &&
+                        ({
+                          id: book.id,
+                          name: book.name,
+                          writer: book.writer,
+                          type: book.type,
+                          searchType: selectedFilterType,
+                        } as AutocompleteOption)
+                      );
+                    case "type":
+                      return (
+                        book.type.includes(autocompleteValue.type) &&
+                        ({
+                          id: book.id,
+                          name: book.name,
+                          writer: book.writer,
+                          type: book.type,
+                          searchType: selectedFilterType,
+                        } as AutocompleteOption)
+                      );
+                  }
+                })}
                 setSelectedFilterType={setSelectedFilterType}
                 selectedFilterType={selectedFilterType}
                 setValue={setAutocompleteValue}
@@ -191,23 +231,26 @@ export default function HomePage() {
                   </TableHead>
                   <TableBody>
                     {rows
-                      // .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                      .slice(
+                        (page - 1) * pageSize,
+                        (page - 1) * pageSize + pageSize
+                      )
                       ?.map((row) => {
                         let status = getStatus(row.status);
                         return (
                           <TableRow role="checkbox" tabIndex={-1} key={row.id}>
                             <TableCell key={columns[0].id}>
-                              {row.name}
+                              {row?.name}
                             </TableCell>
                             <TableCell key={columns[1].id}>
-                              {row.writer}
+                              {row?.writer}
                             </TableCell>
                             <TableCell key={columns[2].id}>
-                              {row.type}
+                              {row?.type}
                             </TableCell>
                             <TableCell
                               key={columns[3].id}
-                              sx={{ color: status.color }}
+                              sx={{ color: status?.color }}
                             >
                               {status.text}
                             </TableCell>
@@ -218,7 +261,7 @@ export default function HomePage() {
                                 justifyContent="center"
                               >
                                 <Box sx={{ width: "2rem" }}>
-                                  {row.status === 1 && (
+                                  {row?.status === 1 && (
                                     <IconButton
                                       edge="end"
                                       size="small"
@@ -235,7 +278,7 @@ export default function HomePage() {
                                 </Box>
 
                                 <Box sx={{ width: "2rem" }}>
-                                  {row.status === 0 ? (
+                                  {row?.status === 0 ? (
                                     <IconButton
                                       edge="end"
                                       size="small"
@@ -246,7 +289,7 @@ export default function HomePage() {
                                         color="#015850"
                                       />
                                     </IconButton>
-                                  ) : row.status === 1 ? (
+                                  ) : row?.status === 1 ? (
                                     <IconButton
                                       edge="end"
                                       size="small"
@@ -280,7 +323,15 @@ export default function HomePage() {
                 </Table>
               </TableContainer>
               <Box sx={{ display: "flex", justifyContent: "center" }}>
-                <Pagination count={10} variant="outlined" shape="rounded" />
+                <Pagination
+                  count={Math.ceil((rows?.length ?? 0) / pageSize)}
+                  page={page}
+                  variant="outlined"
+                  onChange={(_event, value: number) => {
+                    setPage(value);
+                  }}
+                  shape="rounded"
+                />
               </Box>
               <Stack direction={"row"} width={"100%"} justifyContent={"end"}>
                 <Button

@@ -1,5 +1,7 @@
 export default interface AutocompleteOption {
   id: number;
   name: string;
-  type: "name" | "writer" | "type";
+  writer: string;
+  type: string;
+  searchType: "name" | "writer" | "type";
 }
