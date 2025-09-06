@@ -50,6 +50,7 @@ export default function SearchBar(props: SearchBarProps) {
     <Autocomplete
       options={props.options}
       getOptionLabel={(option) => option?.name || ""}
+      filterOptions={(options) => options}
       value={props.value || null}
       onChange={(_event, value) => {
         props.setValue(value);

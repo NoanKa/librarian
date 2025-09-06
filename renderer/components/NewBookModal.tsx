@@ -117,15 +117,13 @@ export default function NewBookModal(props: NewBookModalProps) {
               >
                 <Typography color={"#015850"}>Tür</Typography>
                 <Autocomplete
-                  freeSolo
-                  openOnFocus
                   disableClearable
-                  options={props.types}
-                  filterOptions={(options) => options}
+                  disablePortal
+                  freeSolo
+                  options={["Roman", "Roman", "Roman", "Roman"]}
                   popupIcon={<CaretDownIcon />}
                   forcePopupIcon={props.types.length > 0 ? true : false}
-                  value={props.newBook?.type ?? ""}
-                  inputValue={inputType}
+                  value={props.newBook?.type ?? null}
                   onChange={(_event, value) => {
                     props.setNewBook((prev) => ({
                       ...prev,
@@ -133,8 +131,18 @@ export default function NewBookModal(props: NewBookModalProps) {
                     }));
                     setInputType(value ?? "");
                   }}
-                  onInputChange={(_event, value) => {
-                    setInputType(value);
+                  onInputChange={(_event, newInputValue) => {
+                    setInputType(newInputValue);
+                    props.setNewBook((prev) => ({
+                      ...prev,
+                      type: newInputValue,
+                    }));
+                  }}
+                  ListboxProps={{
+                    style: {
+                      maxHeight: 3 * 40,
+                      overflowY: "auto",
+                    },
                   }}
                   renderInput={(params) => (
                     <TextField {...params} placeholder="Tür" />

@@ -81,7 +81,7 @@ export default function HomePage() {
     }
   };
 
-  const changeStatus = (book: Book, status: "start" | "finish" | "revert") => {
+  const changeStatus = (id: number, status: "start" | "finish" | "revert") => {
     // your logic
   };
 
@@ -116,7 +116,12 @@ export default function HomePage() {
         onClick={() => {
           asyncFunc(() => window.db.addBook(convert(newBook))).then(
             (newBook: Book) => {
-              if (newBook) window.db.getBooks();
+              if (newBook) {
+                window.db.getBooks().then((books: Book[]) => {
+                  if (books) setRows(books);
+                });
+                enqueueSnackbar("Kitap Eklendi", { variant: "success" });
+              }
             }
           );
         }}
@@ -170,58 +175,38 @@ export default function HomePage() {
           ) : (
             <>
               <SearchBar
-                // options={[
-                //   {
-                //     id: 1,
-                //     name: "Kaşağı, Ömer Seyfettin, Roman",
-                //     type: "name",
-                //   },
-                //   {
-                //     id: 2,
-                //     name: "Kaşağı, Ömer Seyfettin, Roman",
-                //     type: "writer",
-                //   },
-                //   {
-                //     id: 3,
-                //     name: "Kaşağı, Ömer Seyfettin, Roman",
-                //     type: "type",
-                //   },
-                // ]}
                 options={rows.flatMap((book) => {
                   switch (selectedFilterType) {
                     case "name":
-                      return (
-                        book.name.includes(autocompleteValue?.name) &&
-                        ({
-                          id: book.id,
-                          name: book.name,
-                          writer: book.writer,
-                          type: book.type,
-                          searchType: selectedFilterType,
-                        } as AutocompleteOption)
-                      );
+                      return book.name.includes(autocompleteValue?.name)
+                        ? ({
+                            id: book.id,
+                            name: book.name,
+                            writer: book.writer,
+                            type: book.type,
+                            searchType: selectedFilterType,
+                          } as AutocompleteOption)
+                        : [];
                     case "writer":
-                      return (
-                        book.writer.includes(autocompleteValue?.writer) &&
-                        ({
-                          id: book.id,
-                          name: book.name,
-                          writer: book.writer,
-                          type: book.type,
-                          searchType: selectedFilterType,
-                        } as AutocompleteOption)
-                      );
+                      return book.writer.includes(autocompleteValue?.writer)
+                        ? ({
+                            id: book.id,
+                            name: book.name,
+                            writer: book.writer,
+                            type: book.type,
+                            searchType: selectedFilterType,
+                          } as AutocompleteOption)
+                        : [];
                     case "type":
-                      return (
-                        book.type.includes(autocompleteValue?.type) &&
-                        ({
-                          id: book.id,
-                          name: book.name,
-                          writer: book.writer,
-                          type: book.type,
-                          searchType: selectedFilterType,
-                        } as AutocompleteOption)
-                      );
+                      return book.type.includes(autocompleteValue?.type)
+                        ? ({
+                            id: book.id,
+                            name: book.name,
+                            writer: book.writer,
+                            type: book.type,
+                            searchType: selectedFilterType,
+                          } as AutocompleteOption)
+                        : [];
                   }
                 })}
                 setSelectedFilterType={setSelectedFilterType}
@@ -275,7 +260,7 @@ export default function HomePage() {
                                       edge="end"
                                       size="small"
                                       onClick={() =>
-                                        changeStatus(row, "revert")
+                                        changeStatus(row.id, "revert")
                                       }
                                     >
                                       <ArrowCounterClockwiseIcon
@@ -291,7 +276,9 @@ export default function HomePage() {
                                     <IconButton
                                       edge="end"
                                       size="small"
-                                      onClick={() => changeStatus(row, "start")}
+                                      onClick={() =>
+                                        changeStatus(row.id, "start")
+                                      }
                                     >
                                       <BookOpenTextIcon
                                         size="1.5rem"
@@ -303,7 +290,7 @@ export default function HomePage() {
                                       edge="end"
                                       size="small"
                                       onClick={() =>
-                                        changeStatus(row, "finish")
+                                        changeStatus(row.id, "finish")
                                       }
                                     >
                                       <BookIcon size="1.5rem" color="#015850" />
