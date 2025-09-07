@@ -9,7 +9,7 @@ import {
   Typography,
 } from "@mui/material";
 import { CaretDownIcon, XCircleIcon } from "@phosphor-icons/react";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import NewBook from "./interface/NewBook";
 
 type NewBookModalProps = {
@@ -120,7 +120,7 @@ export default function NewBookModal(props: NewBookModalProps) {
                   disableClearable
                   disablePortal
                   freeSolo
-                  options={["Roman", "Roman", "Roman", "Roman"]}
+                  options={props.types}
                   popupIcon={<CaretDownIcon />}
                   forcePopupIcon={props.types.length > 0 ? true : false}
                   value={props.newBook?.type ?? null}

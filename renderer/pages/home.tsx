@@ -30,6 +30,7 @@ import { useSnackbar } from "notistack";
 import { Book } from "../../main/types/Book";
 import { convert, sleep } from "../utils/methods";
 import NewBook from "../components/interface/NewBook";
+import { BookStatus } from "../components/enum/BookStatus";
 
 const pageSize = 5;
 
@@ -70,7 +71,7 @@ export default function HomePage() {
     }
   }
 
-  const getStatus = (status: number) => {
+  const getStatus = (status: BookStatus) => {
     switch (status) {
       case 0:
         return { text: "Okunmadı", color: "#B05200" };
@@ -81,8 +82,27 @@ export default function HomePage() {
     }
   };
 
-  const changeStatus = (id: number, status: "start" | "finish" | "revert") => {
-    // your logic
+  const changeStatus = (id: number, status: BookStatus) => {
+    asyncFunc(() => window.db.updateBookStatus(id, status)).then(
+      (updatedBook: Book) => {
+        if (updatedBook) {
+          window.db.getBooks().then((books: Book[]) => {
+            if (books) {
+              setRows(books);
+              setPage(
+                Math.floor(books.findIndex((b) => b.id === id) / pageSize) + 1
+              );
+            }
+          });
+          enqueueSnackbar(
+            'Kitabın Durumu "' +
+              getStatus(status).text +
+              '" Olarak Değiştirildi',
+            { variant: "success" }
+          );
+        }
+      }
+    );
   };
 
   useEffect(() => {
@@ -118,7 +138,14 @@ export default function HomePage() {
             (newBook: Book) => {
               if (newBook) {
                 window.db.getBooks().then((books: Book[]) => {
-                  if (books) setRows(books);
+                  if (books) {
+                    setRows(books);
+                    setPage(
+                      Math.floor(
+                        books.findIndex((b) => b.id === newBook.id) / pageSize
+                      ) + 1
+                    );
+                  }
                 });
                 enqueueSnackbar("Kitap Eklendi", { variant: "success" });
               }
@@ -135,7 +162,14 @@ export default function HomePage() {
               (deletedBook: Book) => {
                 if (deletedBook) {
                   window.db.getBooks().then((books: Book[]) => {
-                    if (books) setRows(books);
+                    if (books) {
+                      setRows(books);
+
+                      let totalPages = Math.ceil(books.length / pageSize);
+                      setPage(
+                        page > totalPages ? Math.max(totalPages, 1) : page
+                      );
+                    }
                   });
                   enqueueSnackbar("Kitap Kaldırıldı", { variant: "success" });
                 }
@@ -260,7 +294,10 @@ export default function HomePage() {
                                       edge="end"
                                       size="small"
                                       onClick={() =>
-                                        changeStatus(row.id, "revert")
+                                        changeStatus(
+                                          row.id,
+                                          BookStatus.NotFinished
+                                        )
                                       }
                                     >
                                       <ArrowCounterClockwiseIcon
@@ -277,7 +314,7 @@ export default function HomePage() {
                                       edge="end"
                                       size="small"
                                       onClick={() =>
-                                        changeStatus(row.id, "start")
+                                        changeStatus(row.id, BookStatus.Ongoing)
                                       }
                                     >
                                       <BookOpenTextIcon
@@ -290,7 +327,10 @@ export default function HomePage() {
                                       edge="end"
                                       size="small"
                                       onClick={() =>
-                                        changeStatus(row.id, "finish")
+                                        changeStatus(
+                                          row.id,
+                                          BookStatus.Finished
+                                        )
                                       }
                                     >
                                       <BookIcon size="1.5rem" color="#015850" />

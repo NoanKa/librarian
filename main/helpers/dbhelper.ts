@@ -5,10 +5,15 @@ import { Book } from "../types/Book";
 
 export function registerDBHelpers() {
   ipcMain.handle("db:getBooks", async () => {
+    const order = [1, 0, 2];
     const db = getDB();
     await db.read();
 
-    return db.data?.books ?? [];
+    return (
+      db.data?.books.sort((a, b) => {
+        return order.indexOf(a.status) - order.indexOf(b.status);
+      }) ?? []
+    );
   });
 
   ipcMain.handle("db:addBook", async (_event, book: Book) => {
