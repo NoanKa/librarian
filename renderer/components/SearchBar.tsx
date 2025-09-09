@@ -49,6 +49,7 @@ export default function SearchBar(props: SearchBarProps) {
   return (
     <Autocomplete
       options={props.options}
+      open={props.options.length > 0}
       getOptionLabel={(option) => option?.name || ""}
       filterOptions={(options) => options}
       value={props.value || null}
@@ -86,6 +87,9 @@ export default function SearchBar(props: SearchBarProps) {
           onFocus={() => {
             props.setValue(undefined);
             setInputValue("");
+          }}
+          onBlur={() => {
+            setFilterType("filter");
           }}
           InputProps={{
             ...params.InputProps,

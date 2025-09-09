@@ -209,40 +209,34 @@ export default function HomePage() {
           ) : (
             <>
               <SearchBar
-                options={rows.flatMap((book) => {
-                  switch (selectedFilterType) {
-                    case "name":
-                      return book.name.includes(autocompleteValue?.name)
-                        ? ({
-                            id: book.id,
-                            name: book.name,
-                            writer: book.writer,
-                            type: book.type,
-                            searchType: selectedFilterType,
-                          } as AutocompleteOption)
-                        : [];
-                    case "writer":
-                      return book.writer.includes(autocompleteValue?.writer)
-                        ? ({
-                            id: book.id,
-                            name: book.name,
-                            writer: book.writer,
-                            type: book.type,
-                            searchType: selectedFilterType,
-                          } as AutocompleteOption)
-                        : [];
-                    case "type":
-                      return book.type.includes(autocompleteValue?.type)
-                        ? ({
-                            id: book.id,
-                            name: book.name,
-                            writer: book.writer,
-                            type: book.type,
-                            searchType: selectedFilterType,
-                          } as AutocompleteOption)
-                        : [];
-                  }
-                })}
+                options={
+                  selectedFilterType
+                    ? rows
+                        .filter((book) => {
+                          switch (selectedFilterType) {
+                            case "name":
+                              return autocompleteValue?.name
+                                ? book.name.includes(autocompleteValue.name)
+                                : false;
+                            case "writer":
+                              return autocompleteValue?.writer
+                                ? book.writer.includes(autocompleteValue.writer)
+                                : false;
+                            case "type":
+                              return autocompleteValue?.type
+                                ? book.type.includes(autocompleteValue.type)
+                                : false;
+                          }
+                        })
+                        .map((book) => ({
+                          id: book.id,
+                          name: book.name,
+                          writer: book.writer,
+                          type: book.type,
+                          searchType: selectedFilterType,
+                        }))
+                    : []
+                }
                 setSelectedFilterType={setSelectedFilterType}
                 selectedFilterType={selectedFilterType}
                 setValue={setAutocompleteValue}
