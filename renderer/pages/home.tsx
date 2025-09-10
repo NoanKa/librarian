@@ -209,34 +209,15 @@ export default function HomePage() {
           ) : (
             <>
               <SearchBar
-                options={
-                  selectedFilterType
-                    ? rows
-                        .filter((book) => {
-                          switch (selectedFilterType) {
-                            case "name":
-                              return autocompleteValue?.name
-                                ? book.name.includes(autocompleteValue.name)
-                                : false;
-                            case "writer":
-                              return autocompleteValue?.writer
-                                ? book.writer.includes(autocompleteValue.writer)
-                                : false;
-                            case "type":
-                              return autocompleteValue?.type
-                                ? book.type.includes(autocompleteValue.type)
-                                : false;
-                          }
-                        })
-                        .map((book) => ({
-                          id: book.id,
-                          name: book.name,
-                          writer: book.writer,
-                          type: book.type,
-                          searchType: selectedFilterType,
-                        }))
-                    : []
-                }
+                options={rows.map((x) => {
+                  return {
+                    id: x.id,
+                    name: x.name,
+                    writer: x.writer,
+                    type: x.type,
+                    searchType: selectedFilterType,
+                  } as AutocompleteOption;
+                })}
                 setSelectedFilterType={setSelectedFilterType}
                 selectedFilterType={selectedFilterType}
                 setValue={setAutocompleteValue}

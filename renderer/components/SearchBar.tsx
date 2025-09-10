@@ -1,6 +1,5 @@
 import {
   Autocomplete,
-  Badge,
   Box,
   Button,
   IconButton,
@@ -10,7 +9,7 @@ import {
   Typography,
 } from "@mui/material";
 import { FunnelIcon, MagnifyingGlassIcon } from "@phosphor-icons/react";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import AutocompleteOption from "./interface/AutocompleteOption";
 
 type SearchBarProps = {
@@ -19,8 +18,10 @@ type SearchBarProps = {
   setSelectedFilterType: React.Dispatch<
     React.SetStateAction<"name" | "writer" | "type" | undefined>
   >;
-  value: AutocompleteOption | null;
-  setValue: React.Dispatch<React.SetStateAction<AutocompleteOption | null>>;
+  value: AutocompleteOption | string | null;
+  setValue: React.Dispatch<
+    React.SetStateAction<AutocompleteOption | string | null>
+  >;
 };
 
 export default function SearchBar(props: SearchBarProps) {
@@ -40,6 +41,11 @@ export default function SearchBar(props: SearchBarProps) {
     }
   };
 
+  const getOptionLabel = (option: AutocompleteOption | string) => {
+    if (typeof option === "string") return option;
+    return `${option.name}, ${option.writer}, ${option.type}`;
+  };
+
   useEffect(() => {
     if (props.selectedFilterType !== undefined) {
       setFilterType("type");
@@ -47,17 +53,55 @@ export default function SearchBar(props: SearchBarProps) {
   }, [props.selectedFilterType]);
 
   return (
-    <Autocomplete
+    <Autocomplete<AutocompleteOption | string>
       options={props.options}
-      open={props.options.length > 0}
-      getOptionLabel={(option) => option?.name || ""}
-      filterOptions={(options) => options}
       value={props.value || null}
-      onChange={(_event, value) => {
-        props.setValue(value);
-        if (value) {
-          setInputValue(`${value.name}, ${value.writer}, ${value.type}`);
+      filterOptions={(options, state) => {
+        const input = state.inputValue.toLowerCase();
+        let filtered = options.filter((opt) => {
+          if (typeof opt === "string") return false;
+          if (!props.selectedFilterType) return false;
+
+          switch (props.selectedFilterType) {
+            case "name":
+              return opt.name.toLowerCase().includes(input);
+            case "writer":
+              return opt.writer.toLowerCase().includes(input);
+            case "type":
+              return opt.type.toLowerCase().includes(input);
+          }
+        });
+
+        if (
+          state.inputValue !== "" &&
+          !filtered.some((o) => getOptionLabel(o).toLowerCase() === input)
+        ) {
+          filtered.push(state.inputValue);
+        }
+
+        return filtered;
+      }}
+      getOptionLabel={(option) => {
+        if (typeof option === "string") return option;
+        if ("name" in option && "writer" in option && "type" in option) {
+          return `${option.name}, ${option.writer}, ${option.type}`;
+        }
+        return "";
+      }}
+      onChange={(_event, newValue) => {
+        if (typeof newValue === "string") {
+          const pseudoOption = { name: newValue, writer: "", type: "" };
+          props.setValue(pseudoOption as AutocompleteOption);
+          setInputValue(
+            `${pseudoOption.name}, ${pseudoOption.writer}, ${pseudoOption.type}`
+          );
+        } else if (newValue && "name" in newValue) {
+          props.setValue(newValue);
+          setInputValue(
+            `${newValue.name}, ${newValue.writer}, ${newValue.type}`
+          );
         } else {
+          props.setValue(null);
           setInputValue("");
         }
       }}
@@ -67,6 +111,7 @@ export default function SearchBar(props: SearchBarProps) {
           setInputValue(value);
         }
       }}
+      open={props.options.length > 0}
       sx={{
         ":hover": {
           borderColor: "#015850 !important",
@@ -204,41 +249,48 @@ export default function SearchBar(props: SearchBarProps) {
           }}
         />
       )}
-      renderOption={(props, option) => (
-        <li {...props}>
-          <Stack
-            direction="row"
-            justifyContent={"start"}
-            alignItems={"center"}
-            paddingLeft={"1.70rem"}
-            gap={"2rem"}
-          >
-            <Typography
-              color={getType(option?.type)?.color}
-              fontWeight={"bold"}
+      renderOption={(props, option) => {
+        if (typeof option === "string") {
+          return (
+            <li {...props}>
+              <Typography>{option}</Typography>
+            </li>
+          );
+        }
+
+        return (
+          <li {...props}>
+            <Stack
+              direction="row"
+              justifyContent="start"
+              alignItems="center"
+              paddingLeft="1.70rem"
+              gap="2rem"
             >
-              {option?.name + ", " + option?.writer + ", " + option?.type}
-            </Typography>
-            <Box
-              sx={{
-                border: "0.06rem solid",
-                borderColor: getType(option?.type)?.color,
-                color: getType(option?.type)?.color,
-                fontWeight: "bold",
-                fontSize: "0.72rem",
-                borderRadius: "0.12rem",
-                px: "0.37em",
-                py: "0.06rem",
-                display: "flex",
-                width: "3rem",
-                justifyContent: "center",
-              }}
-            >
-              {getType(option?.type)?.name}
-            </Box>
-          </Stack>
-        </li>
-      )}
+              <Typography color={getType(option.type)?.color} fontWeight="bold">
+                {option.name}, {option.writer}, {option.type}
+              </Typography>
+              <Box
+                sx={{
+                  border: "0.06rem solid",
+                  borderColor: getType(option.type)?.color,
+                  color: getType(option.type)?.color,
+                  fontWeight: "bold",
+                  fontSize: "0.72rem",
+                  borderRadius: "0.12rem",
+                  px: "0.37em",
+                  py: "0.06rem",
+                  display: "flex",
+                  width: "3rem",
+                  justifyContent: "center",
+                }}
+              >
+                {getType(option.type)?.name}
+              </Box>
+            </Stack>
+          </li>
+        );
+      }}
     />
   );
 }
