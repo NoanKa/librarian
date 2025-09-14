@@ -69,7 +69,7 @@ export default function HomePage() {
     setIsLoader(true);
 
     try {
-      const [result] = await Promise.all([method(), sleep(2000)]);
+      const [result] = await Promise.all([method(), sleep(1500)]);
       return result;
     } catch (err) {
       enqueueSnackbar(err, { variant: "error" });
@@ -140,10 +140,12 @@ export default function HomePage() {
   }, [selectedFilterType]);
 
   useEffect(() => {
-    if (!((rows?.length ?? 0) > 0) && (isLoader ?? true) !== true) {
-      setIsEmptyList(true);
-    } else {
-      setIsEmptyList(false);
+    if (rows) {
+      if (!((rows.length ?? 0) > 0) && (isLoader ?? true) !== true) {
+        setIsEmptyList(true);
+      } else {
+        setIsEmptyList(false);
+      }
     }
   }, [rows]);
 
@@ -172,14 +174,9 @@ export default function HomePage() {
               if (newBook) {
                 window.db.getBooks().then((books: Book[]) => {
                   if (books) {
-                    const newIndex = books.findIndex(
-                      (b) => b.id === newBook.id
-                    );
-                    const newPage =
-                      newIndex !== -1 ? Math.floor(newIndex / pageSize) + 1 : 1;
-
                     setRows(books);
-                    setPage(newPage);
+                    setPage(Math.floor(books.length / pageSize) + 1);
+                    setNewBook(undefined);
                     setSearchValue("");
                     setSelectedFilterType(undefined);
                     setFilterType("filter");
@@ -557,27 +554,28 @@ export default function HomePage() {
                       </Stack>
                     </>
                   );
-                }
-                return (
-                  <Stack
-                    alignItems="center"
-                    justifyContent="center"
-                    height="100%"
-                    gap={2}
-                  >
-                    <BooksIcon size="4rem" color="#B05200" />
-                    <Typography
-                      fontSize="1.5rem"
-                      sx={{
-                        whiteSpace: "pre-line",
-                        textAlign: "center",
-                        color: "#015850",
-                      }}
+                } else if (data && data.length === 0) {
+                  return (
+                    <Stack
+                      alignItems="center"
+                      justifyContent="center"
+                      height="100%"
+                      gap={2}
                     >
-                      Aramanıza uygun bir kitap bulunamadı.
-                    </Typography>
-                  </Stack>
-                );
+                      <BooksIcon size="4rem" color="#B05200" />
+                      <Typography
+                        fontSize="1.5rem"
+                        sx={{
+                          whiteSpace: "pre-line",
+                          textAlign: "center",
+                          color: "#015850",
+                        }}
+                      >
+                        Aramanıza uygun bir kitap bulunamadı.
+                      </Typography>
+                    </Stack>
+                  );
+                }
               })()}
             </>
           )}
