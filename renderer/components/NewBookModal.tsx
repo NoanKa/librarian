@@ -22,8 +22,6 @@ type NewBookModalProps = {
 };
 
 export default function NewBookModal(props: NewBookModalProps) {
-  const [inputType, setInputType] = useState("");
-
   const handleClose = () => {
     props.setNewBook(undefined);
     props.close();
@@ -129,10 +127,8 @@ export default function NewBookModal(props: NewBookModalProps) {
                       ...prev,
                       type: value ?? "",
                     }));
-                    setInputType(value ?? "");
                   }}
                   onInputChange={(_event, newInputValue) => {
-                    setInputType(newInputValue);
                     props.setNewBook((prev) => ({
                       ...prev,
                       type: newInputValue,

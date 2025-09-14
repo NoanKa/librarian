@@ -51,13 +51,14 @@ export default function HomePage() {
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState<boolean>(false);
   const [isNewBookModalOpen, setIsNewBookModalOpen] = useState<boolean>(false);
   const [isLoader, setIsLoader] = useState<boolean>(false);
+  const [isEmptyList, setIsEmptyList] = useState<boolean>(false);
   const [selectedFilterType, setSelectedFilterType] = useState<
     "name" | "writer" | "type" | undefined
   >();
   const [filterType, setFilterType] = useState<"filter" | "buttons" | "type">(
     "filter"
   );
-  const [searchValue, setSearchValue] = useState<string>();
+  const [searchValue, setSearchValue] = useState<string>("");
   const [selectedRow, setSelectedRow] = useState<Book>();
   const [rows, setRows] = useState<Book[]>();
   const [bookTypes, setBookTypes] = useState<string[]>();
@@ -76,42 +77,6 @@ export default function HomePage() {
       setIsLoader(false);
     }
   }
-
-  const filteredPagination = (): Book[] => {
-    const filtered =
-      rows?.filter((value) => {
-        if (searchValue) {
-          switch (selectedFilterType) {
-            case "name":
-              return value.name
-                .toLowerCase()
-                .includes(searchValue.toLowerCase());
-            case "writer":
-              return value.writer
-                .toLowerCase()
-                .includes(searchValue.toLowerCase());
-            case "type":
-              return value.type
-                .toLowerCase()
-                .includes(searchValue.toLowerCase());
-            default:
-              return (
-                value.name.toLowerCase().includes(searchValue.toLowerCase()) ||
-                value.writer
-                  .toLowerCase()
-                  .includes(searchValue.toLowerCase()) ||
-                value.type.toLowerCase().includes(searchValue.toLowerCase())
-              );
-          }
-        }
-        return true;
-      }) ?? [];
-
-    return filtered.slice(
-      (page - 1) * pageSize,
-      (page - 1) * pageSize + pageSize
-    );
-  };
 
   const getStatus = (status: BookStatus) => {
     switch (status) {
@@ -145,6 +110,7 @@ export default function HomePage() {
               setPage(
                 Math.floor(books.findIndex((b) => b.id === id) / pageSize) + 1
               );
+              setNewBook(undefined);
             }
           });
           enqueueSnackbar(
@@ -174,10 +140,15 @@ export default function HomePage() {
   }, [selectedFilterType]);
 
   useEffect(() => {
+    if (!((rows?.length ?? 0) > 0) && (isLoader ?? true) !== true) {
+      setIsEmptyList(true);
+    } else {
+      setIsEmptyList(false);
+    }
+  }, [rows]);
+
+  useEffect(() => {
     if (isLoader === true) {
-      setSearchValue("");
-      setSelectedFilterType(undefined);
-      setFilterType("filter");
       setIsNewBookModalOpen(false);
       setIsDeleteModalOpen(false);
     }
@@ -201,12 +172,17 @@ export default function HomePage() {
               if (newBook) {
                 window.db.getBooks().then((books: Book[]) => {
                   if (books) {
-                    setRows(books);
-                    setPage(
-                      Math.floor(
-                        books.findIndex((b) => b.id === newBook.id) / pageSize
-                      ) + 1
+                    const newIndex = books.findIndex(
+                      (b) => b.id === newBook.id
                     );
+                    const newPage =
+                      newIndex !== -1 ? Math.floor(newIndex / pageSize) + 1 : 1;
+
+                    setRows(books);
+                    setPage(newPage);
+                    setSearchValue("");
+                    setSelectedFilterType(undefined);
+                    setFilterType("filter");
                   }
                 });
                 enqueueSnackbar("Kitap Eklendi", { variant: "success" });
@@ -225,12 +201,15 @@ export default function HomePage() {
                 if (deletedBook) {
                   window.db.getBooks().then((books: Book[]) => {
                     if (books) {
-                      setRows(books);
+                      const totalPages = Math.ceil(books.length / pageSize);
+                      const newPage =
+                        page > totalPages ? Math.max(totalPages, 1) : page;
 
-                      let totalPages = Math.ceil(books.length / pageSize);
-                      setPage(
-                        page > totalPages ? Math.max(totalPages, 1) : page
-                      );
+                      setRows(books);
+                      setPage(newPage);
+                      setSearchValue("");
+                      setSelectedFilterType(undefined);
+                      setFilterType("filter");
                     }
                   });
                   enqueueSnackbar("Kitap Kaldırıldı", { variant: "success" });
@@ -266,7 +245,7 @@ export default function HomePage() {
             height: "100%",
           }}
         >
-          {!(rows?.length > 0) && !isLoader ? (
+          {isEmptyList ? (
             <EmptyList onClick={() => setIsNewBookModalOpen(true)} />
           ) : (
             <>
@@ -278,7 +257,6 @@ export default function HomePage() {
                   },
                 }}
                 variant="outlined"
-                color="primary"
                 placeholder="Kitap, yazar veya tür ara"
                 value={searchValue}
                 onFocus={() => {
@@ -404,167 +382,203 @@ export default function HomePage() {
                 }}
               />
               {(() => {
-                const data = filteredPagination();
-                if (data.length === 0 && !isLoader) {
+                const data = rows
+                  ?.filter((value) => {
+                    if (searchValue !== "") {
+                      switch (selectedFilterType) {
+                        case "name":
+                          return value.name
+                            .toLowerCase()
+                            .includes(searchValue.toLowerCase());
+                        case "writer":
+                          return value.writer
+                            .toLowerCase()
+                            .includes(searchValue.toLowerCase());
+                        case "type":
+                          return value.type
+                            .toLowerCase()
+                            .includes(searchValue.toLowerCase());
+                        default:
+                          return (
+                            value.name
+                              .toLowerCase()
+                              .includes(searchValue.toLowerCase()) ||
+                            value.writer
+                              .toLowerCase()
+                              .includes(searchValue.toLowerCase()) ||
+                            value.type
+                              .toLowerCase()
+                              .includes(searchValue.toLowerCase())
+                          );
+                      }
+                    } else return true;
+                  })
+                  .slice(
+                    (page - 1) * pageSize,
+                    (page - 1) * pageSize + pageSize
+                  );
+                if (data?.length > 0) {
                   return (
-                    <Stack
-                      alignItems="center"
-                      justifyContent="center"
-                      height="100%"
-                      gap={2}
-                    >
-                      <BooksIcon size="4rem" color="#B05200" />
-                      <Typography
-                        fontSize="1.5rem"
-                        sx={{
-                          whiteSpace: "pre-line",
-                          textAlign: "center",
-                          color: "#015850",
-                        }}
+                    <>
+                      <TableContainer
+                        sx={{ backgroundColor: "white", height: "100%" }}
                       >
-                        Aramanıza uygun bir kitap bulunamadı.
-                      </Typography>
-                    </Stack>
+                        <Table stickyHeader>
+                          <TableHead>
+                            <TableRow>
+                              {columns.map((column) => (
+                                <TableCell key={column.id}>
+                                  {column.label}
+                                </TableCell>
+                              ))}
+                            </TableRow>
+                          </TableHead>
+                          <TableBody>
+                            {data?.map((row) => {
+                              const status = getStatus(row.status);
+                              return (
+                                <TableRow
+                                  role="checkbox"
+                                  tabIndex={-1}
+                                  key={row.id}
+                                >
+                                  <TableCell>{row.name}</TableCell>
+                                  <TableCell>{row.writer}</TableCell>
+                                  <TableCell>{row.type}</TableCell>
+                                  <TableCell sx={{ color: status?.color }}>
+                                    {status.text}
+                                  </TableCell>
+                                  <TableCell>
+                                    <Stack
+                                      direction="row"
+                                      spacing={1}
+                                      justifyContent="center"
+                                    >
+                                      <Box sx={{ width: "2rem" }}>
+                                        {row.status === 1 && (
+                                          <IconButton
+                                            edge="end"
+                                            size="small"
+                                            onClick={() =>
+                                              changeStatus(
+                                                row.id,
+                                                BookStatus.NotFinished
+                                              )
+                                            }
+                                          >
+                                            <ArrowCounterClockwiseIcon
+                                              size="1.5rem"
+                                              color="#B05200"
+                                            />
+                                          </IconButton>
+                                        )}
+                                      </Box>
+                                      <Box sx={{ width: "2rem" }}>
+                                        {row.status === 0 ? (
+                                          <IconButton
+                                            edge="end"
+                                            size="small"
+                                            onClick={() =>
+                                              changeStatus(
+                                                row.id,
+                                                BookStatus.Ongoing
+                                              )
+                                            }
+                                          >
+                                            <BookOpenTextIcon
+                                              size="1.5rem"
+                                              color="#015850"
+                                            />
+                                          </IconButton>
+                                        ) : row.status === 1 ? (
+                                          <IconButton
+                                            edge="end"
+                                            size="small"
+                                            onClick={() =>
+                                              changeStatus(
+                                                row.id,
+                                                BookStatus.Finished
+                                              )
+                                            }
+                                          >
+                                            <BookIcon
+                                              size="1.5rem"
+                                              color="#015850"
+                                            />
+                                          </IconButton>
+                                        ) : null}
+                                      </Box>
+                                      <Box sx={{ width: "2rem" }}>
+                                        <IconButton
+                                          edge="end"
+                                          size="small"
+                                          onClick={() => {
+                                            setSelectedRow(row);
+                                            setIsDeleteModalOpen(true);
+                                          }}
+                                        >
+                                          <TrashIcon
+                                            size="1.5rem"
+                                            color="#FF0000"
+                                          />
+                                        </IconButton>
+                                      </Box>
+                                    </Stack>
+                                  </TableCell>
+                                </TableRow>
+                              );
+                            })}
+                          </TableBody>
+                        </Table>
+                      </TableContainer>
+                      <Box sx={{ display: "flex", justifyContent: "center" }}>
+                        <Pagination
+                          count={Math.ceil((rows?.length ?? 0) / pageSize)}
+                          page={page}
+                          variant="outlined"
+                          onChange={(_event, value: number) => {
+                            setPage(value);
+                          }}
+                          shape="rounded"
+                        />
+                      </Box>
+                      <Stack
+                        direction={"row"}
+                        width={"100%"}
+                        justifyContent={"end"}
+                      >
+                        <Button
+                          variant="contained"
+                          sx={{ paddingX: "2.5rem", paddingY: "0.5rem" }}
+                          onClick={() => setIsNewBookModalOpen(true)}
+                        >
+                          Ekle
+                        </Button>
+                      </Stack>
+                    </>
                   );
                 }
                 return (
-                  <TableContainer
-                    sx={{ backgroundColor: "white", height: "100%" }}
+                  <Stack
+                    alignItems="center"
+                    justifyContent="center"
+                    height="100%"
+                    gap={2}
                   >
-                    <Table stickyHeader>
-                      <TableHead>
-                        <TableRow>
-                          {columns.map((column) => (
-                            <TableCell key={column.id}>
-                              {column.label}
-                            </TableCell>
-                          ))}
-                        </TableRow>
-                      </TableHead>
-                      <TableBody>
-                        {data.map((row) => {
-                          const status = getStatus(row.status);
-                          return (
-                            <TableRow
-                              role="checkbox"
-                              tabIndex={-1}
-                              key={row.id}
-                            >
-                              <TableCell>{row.name}</TableCell>
-                              <TableCell>{row.writer}</TableCell>
-                              <TableCell>{row.type}</TableCell>
-                              <TableCell sx={{ color: status?.color }}>
-                                {status.text}
-                              </TableCell>
-                              <TableCell>
-                                <Stack
-                                  direction="row"
-                                  spacing={1}
-                                  justifyContent="center"
-                                >
-                                  <Box sx={{ width: "2rem" }}>
-                                    {row.status === 1 && (
-                                      <IconButton
-                                        edge="end"
-                                        size="small"
-                                        onClick={() =>
-                                          changeStatus(
-                                            row.id,
-                                            BookStatus.NotFinished
-                                          )
-                                        }
-                                      >
-                                        <ArrowCounterClockwiseIcon
-                                          size="1.5rem"
-                                          color="#B05200"
-                                        />
-                                      </IconButton>
-                                    )}
-                                  </Box>
-                                  <Box sx={{ width: "2rem" }}>
-                                    {row.status === 0 ? (
-                                      <IconButton
-                                        edge="end"
-                                        size="small"
-                                        onClick={() =>
-                                          changeStatus(
-                                            row.id,
-                                            BookStatus.Ongoing
-                                          )
-                                        }
-                                      >
-                                        <BookOpenTextIcon
-                                          size="1.5rem"
-                                          color="#015850"
-                                        />
-                                      </IconButton>
-                                    ) : row.status === 1 ? (
-                                      <IconButton
-                                        edge="end"
-                                        size="small"
-                                        onClick={() =>
-                                          changeStatus(
-                                            row.id,
-                                            BookStatus.Finished
-                                          )
-                                        }
-                                      >
-                                        <BookIcon
-                                          size="1.5rem"
-                                          color="#015850"
-                                        />
-                                      </IconButton>
-                                    ) : null}
-                                  </Box>
-                                  <Box sx={{ width: "2rem" }}>
-                                    <IconButton
-                                      edge="end"
-                                      size="small"
-                                      onClick={() => {
-                                        setSelectedRow(row);
-                                        setIsDeleteModalOpen(true);
-                                      }}
-                                    >
-                                      <TrashIcon
-                                        size="1.5rem"
-                                        color="#FF0000"
-                                      />
-                                    </IconButton>
-                                  </Box>
-                                </Stack>
-                              </TableCell>
-                            </TableRow>
-                          );
-                        })}
-                      </TableBody>
-                    </Table>
-                  </TableContainer>
+                    <BooksIcon size="4rem" color="#B05200" />
+                    <Typography
+                      fontSize="1.5rem"
+                      sx={{
+                        whiteSpace: "pre-line",
+                        textAlign: "center",
+                        color: "#015850",
+                      }}
+                    >
+                      Aramanıza uygun bir kitap bulunamadı.
+                    </Typography>
+                  </Stack>
                 );
               })()}
-              <Box sx={{ display: "flex", justifyContent: "center" }}>
-                {filteredPagination().length > 0 && (
-                  <Pagination
-                    count={Math.ceil((rows?.length ?? 0) / pageSize)}
-                    page={page}
-                    variant="outlined"
-                    onChange={(_event, value: number) => {
-                      setPage(value);
-                    }}
-                    shape="rounded"
-                  />
-                )}
-              </Box>
-              <Stack direction={"row"} width={"100%"} justifyContent={"end"}>
-                {filteredPagination().length > 0 && (
-                  <Button
-                    variant="contained"
-                    sx={{ paddingX: "2.5rem", paddingY: "0.5rem" }}
-                    onClick={() => setIsNewBookModalOpen(true)}
-                  >
-                    Ekle
-                  </Button>
-                )}
-              </Stack>
             </>
           )}
         </Stack>

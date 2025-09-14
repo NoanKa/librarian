@@ -59,18 +59,20 @@ const theme = createTheme({
       styleOverrides: {
         root: {
           color: "#015850",
-          borderColor: "rgba(1, 88, 80, 0.4)",
           "& .MuiOutlinedInput-notchedOutline": {
-            borderColor: "rgba(1, 88, 80, 0.4)",
+            border: "1px solid rgba(1, 88, 80, 0.40)",
           },
           "&:hover .MuiOutlinedInput-notchedOutline": {
-            borderColor: "rgba(1, 88, 80, 0.4)",
+            border: "1px solid rgba(1, 88, 80, 0.40)",
           },
           "&.Mui-focused .MuiOutlinedInput-notchedOutline": {
-            borderColor: "#015850",
+            border: "1px solid rgba(1, 88, 80, 0.40)",
           },
-          "&.Mui-focused": {
-            boxShadow: "none",
+          "&.Mui-error .MuiOutlinedInput-notchedOutline": {
+            border: "1px solid rgba(1, 88, 80, 0.40)",
+          },
+          "&.Mui-disabled .MuiOutlinedInput-notchedOutline": {
+            border: "1px solid rgba(1, 88, 80, 0.40)",
           },
         },
       },
