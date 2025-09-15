@@ -579,7 +579,7 @@ export default function HomePage() {
                       </Stack>
                     </>
                   );
-                } else if (data && data.length === 0) {
+                } else if (data?.length === 0) {
                   return (
                     <Stack
                       alignItems="center"
