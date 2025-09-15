@@ -71,4 +71,11 @@ export function registerDBHelpers() {
 
     return Array.from(new Set(db.data?.books.map((book) => book.type)));
   });
+
+  ipcMain.handle("db:getWriters", async () => {
+    const db = getDB();
+    await db.read();
+
+    return Array.from(new Set(db.data?.books.map((book) => book.writer)));
+  });
 }

@@ -62,6 +62,7 @@ export default function HomePage() {
   const [selectedRow, setSelectedRow] = useState<Book>();
   const [rows, setRows] = useState<Book[]>();
   const [bookTypes, setBookTypes] = useState<string[]>();
+  const [bookWriters, setBookWriters] = useState<string[]>();
   const [newBook, setNewBook] = useState<NewBook>();
   const [page, setPage] = useState<number>(1);
 
@@ -131,6 +132,9 @@ export default function HomePage() {
     asyncFunc(() => window.db.getTypes()).then((types: string[]) => {
       if (types) setBookTypes(types);
     });
+    asyncFunc(() => window.db.getWriters()).then((writers: string[]) => {
+      if (writers) setBookWriters(writers);
+    });
   }, []);
 
   useEffect(() => {
@@ -166,6 +170,7 @@ export default function HomePage() {
         isOpen={isNewBookModalOpen}
         close={() => setIsNewBookModalOpen(false)}
         types={bookTypes}
+        writers={bookWriters}
         newBook={newBook}
         setNewBook={setNewBook}
         onClick={() => {
@@ -180,6 +185,16 @@ export default function HomePage() {
                     setSearchValue("");
                     setSelectedFilterType(undefined);
                     setFilterType("filter");
+                    asyncFunc(() => window.db.getTypes()).then(
+                      (types: string[]) => {
+                        if (types) setBookTypes(types);
+                      }
+                    );
+                    asyncFunc(() => window.db.getWriters()).then(
+                      (writers: string[]) => {
+                        if (writers) setBookWriters(writers);
+                      }
+                    );
                   }
                 });
                 enqueueSnackbar("Kitap Eklendi", { variant: "success" });
@@ -207,6 +222,16 @@ export default function HomePage() {
                       setSearchValue("");
                       setSelectedFilterType(undefined);
                       setFilterType("filter");
+                      asyncFunc(() => window.db.getTypes()).then(
+                        (types: string[]) => {
+                          if (types) setBookTypes(types);
+                        }
+                      );
+                      asyncFunc(() => window.db.getWriters()).then(
+                        (writers: string[]) => {
+                          if (writers) setBookWriters(writers);
+                        }
+                      );
                     }
                   });
                   enqueueSnackbar("Kitap Kaldırıldı", { variant: "success" });

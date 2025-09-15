@@ -24,6 +24,7 @@ contextBridge.exposeInMainWorld("db", {
     ipcRenderer.invoke("db:updateBookStatus", id, status),
   deleteBook: (id: number) => ipcRenderer.invoke("db:deleteBook", id),
   getTypes: () => ipcRenderer.invoke("db:getTypes"),
+  getWriters: () => ipcRenderer.invoke("db:getWriters"),
 });
 
 export type IpcHandler = typeof handler;

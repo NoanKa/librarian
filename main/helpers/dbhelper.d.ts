@@ -6,4 +6,5 @@ export interface DBAPI {
   updateBookStatus: (id: number, status: number) => Promise<Book>;
   deleteBook: (id: number) => Promise<Book>;
   getTypes: () => Promise<string[]>;
+  getWriters: () => Promise<string[]>;
 }

@@ -9,7 +9,7 @@ import {
   Typography,
 } from "@mui/material";
 import { CaretDownIcon, XCircleIcon } from "@phosphor-icons/react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import NewBook from "./interface/NewBook";
 
 type NewBookModalProps = {
@@ -17,6 +17,7 @@ type NewBookModalProps = {
   onClick: () => void;
   close: () => void;
   types: string[];
+  writers: string[];
   newBook: NewBook;
   setNewBook: React.Dispatch<React.SetStateAction<NewBook>>;
 };
@@ -97,15 +98,35 @@ export default function NewBookModal(props: NewBookModalProps) {
                 gap={"0.62rem"}
               >
                 <Typography color={"#015850"}>Yazar</Typography>
-                <OutlinedInput
-                  placeholder="Yazar"
-                  value={props.newBook?.writer}
-                  onChange={(e) => {
+                <Autocomplete
+                  disableClearable
+                  disablePortal
+                  freeSolo
+                  options={props.writers}
+                  popupIcon={<CaretDownIcon />}
+                  forcePopupIcon={props.writers.length > 0 ? true : false}
+                  value={props.newBook?.writer ?? null}
+                  onChange={(_event, value) => {
                     props.setNewBook((prev) => ({
                       ...prev,
-                      writer: e.target.value,
+                      writer: value ?? "",
                     }));
                   }}
+                  onInputChange={(_event, newInputValue) => {
+                    props.setNewBook((prev) => ({
+                      ...prev,
+                      writer: newInputValue,
+                    }));
+                  }}
+                  ListboxProps={{
+                    style: {
+                      maxHeight: 3 * 40,
+                      overflowY: "auto",
+                    },
+                  }}
+                  renderInput={(params) => (
+                    <TextField {...params} placeholder="Yazar" />
+                  )}
                 />
               </Stack>
               <Stack
