@@ -52,6 +52,7 @@ export default function HomePage() {
   const [isNewBookModalOpen, setIsNewBookModalOpen] = useState<boolean>(false);
   const [isLoader, setIsLoader] = useState<boolean>(false);
   const [isEmptyList, setIsEmptyList] = useState<boolean>(false);
+  const [isFirstLoad, setIsFirstLoad] = useState(true);
   const [selectedFilterType, setSelectedFilterType] = useState<
     "name" | "writer" | "type" | undefined
   >();
@@ -127,7 +128,10 @@ export default function HomePage() {
 
   useEffect(() => {
     asyncFunc(() => window.db.getBooks()).then((books: Book[]) => {
-      if (books) setRows(books);
+      if (books) {
+        setRows(books);
+        setIsFirstLoad(false);
+      }
     });
     asyncFunc(() => window.db.getTypes()).then((types: string[]) => {
       if (types) setBookTypes(types);
@@ -185,16 +189,12 @@ export default function HomePage() {
                     setSearchValue("");
                     setSelectedFilterType(undefined);
                     setFilterType("filter");
-                    asyncFunc(() => window.db.getTypes()).then(
-                      (types: string[]) => {
-                        if (types) setBookTypes(types);
-                      }
-                    );
-                    asyncFunc(() => window.db.getWriters()).then(
-                      (writers: string[]) => {
-                        if (writers) setBookWriters(writers);
-                      }
-                    );
+                    window.db.getTypes().then((types: string[]) => {
+                      if (types) setBookTypes(types);
+                    });
+                    window.db.getWriters().then((writers: string[]) => {
+                      if (writers) setBookWriters(writers);
+                    });
                   }
                 });
                 enqueueSnackbar("Kitap Eklendi", { variant: "success" });
@@ -222,16 +222,12 @@ export default function HomePage() {
                       setSearchValue("");
                       setSelectedFilterType(undefined);
                       setFilterType("filter");
-                      asyncFunc(() => window.db.getTypes()).then(
-                        (types: string[]) => {
-                          if (types) setBookTypes(types);
-                        }
-                      );
-                      asyncFunc(() => window.db.getWriters()).then(
-                        (writers: string[]) => {
-                          if (writers) setBookWriters(writers);
-                        }
-                      );
+                      window.db.getTypes().then((types: string[]) => {
+                        if (types) setBookTypes(types);
+                      });
+                      window.db.getWriters().then((writers: string[]) => {
+                        if (writers) setBookWriters(writers);
+                      });
                     }
                   });
                   enqueueSnackbar("Kitap Kaldırıldı", { variant: "success" });
@@ -270,339 +266,342 @@ export default function HomePage() {
           {isEmptyList ? (
             <EmptyList onClick={() => setIsNewBookModalOpen(true)} />
           ) : (
-            <>
-              <TextField
-                sx={{
-                  "& .MuiAutocomplete-inputRoot": {
-                    paddingRight: "1rem !important",
-                    paddingLeft: "1rem !important",
-                  },
-                }}
-                variant="outlined"
-                placeholder="Kitap, yazar veya tür ara"
-                value={searchValue}
-                onFocus={() => {
-                  setSearchValue("");
-                }}
-                onBlur={() => {
-                  setFilterType("filter");
-                }}
-                onChange={(e) => {
-                  setSearchValue(e.target.value);
-                }}
-                InputProps={{
-                  startAdornment: (
-                    <InputAdornment position="start">
-                      <MagnifyingGlassIcon
-                        size="1rem"
-                        color="rgba(1, 88, 80, 0.4)"
-                      />
-                    </InputAdornment>
-                  ),
-                  endAdornment: (
-                    <InputAdornment position="end">
-                      {filterType === "filter" && (
-                        <IconButton
-                          edge="end"
-                          size="small"
-                          onClick={() => setFilterType("buttons")}
-                        >
-                          <FunnelIcon size="1.5rem" color="#015850" />
-                        </IconButton>
-                      )}
-                      {filterType === "buttons" && (
-                        <Stack direction={"row"} gap={"0.62rem"}>
-                          <Button
-                            variant="outlined"
-                            sx={{
-                              color: getFilterType("name").color,
-                              border:
-                                "0.10rem solid " +
-                                getFilterType("name").color +
-                                " !important",
-                              ":hover": {
-                                backgroundColor: getFilterType("name").color,
+            !isFirstLoad && (
+              <>
+                <TextField
+                  sx={{
+                    "& .MuiAutocomplete-inputRoot": {
+                      paddingRight: "1rem !important",
+                      paddingLeft: "1rem !important",
+                    },
+                  }}
+                  variant="outlined"
+                  placeholder="Kitap, yazar veya tür ara"
+                  value={searchValue}
+                  onFocus={() => {
+                    setSearchValue("");
+                  }}
+                  onBlur={() => {
+                    setFilterType("filter");
+                  }}
+                  onChange={(e) => {
+                    setSearchValue(e.target.value);
+                  }}
+                  InputProps={{
+                    startAdornment: (
+                      <InputAdornment position="start">
+                        <MagnifyingGlassIcon
+                          size="1rem"
+                          color="rgba(1, 88, 80, 0.4)"
+                        />
+                      </InputAdornment>
+                    ),
+                    endAdornment: (
+                      <InputAdornment position="end">
+                        {filterType === "filter" && (
+                          <IconButton
+                            edge="end"
+                            size="small"
+                            onClick={() => setFilterType("buttons")}
+                          >
+                            <FunnelIcon size="1.5rem" color="#015850" />
+                          </IconButton>
+                        )}
+                        {filterType === "buttons" && (
+                          <Stack direction={"row"} gap={"0.62rem"}>
+                            <Button
+                              variant="outlined"
+                              sx={{
+                                color: getFilterType("name").color,
                                 border:
                                   "0.10rem solid " +
                                   getFilterType("name").color +
                                   " !important",
-                              },
-                            }}
-                            onClick={() => setSelectedFilterType("name")}
-                          >
-                            BAŞLIK
-                          </Button>
-                          <Button
-                            variant="outlined"
-                            sx={{
-                              color: getFilterType("writer").color,
-                              border:
-                                "0.10rem solid " +
-                                getFilterType("writer").color +
-                                " !important",
-                              ":hover": {
-                                backgroundColor: getFilterType("writer").color,
+                                ":hover": {
+                                  backgroundColor: getFilterType("name").color,
+                                  border:
+                                    "0.10rem solid " +
+                                    getFilterType("name").color +
+                                    " !important",
+                                },
+                              }}
+                              onClick={() => setSelectedFilterType("name")}
+                            >
+                              BAŞLIK
+                            </Button>
+                            <Button
+                              variant="outlined"
+                              sx={{
+                                color: getFilterType("writer").color,
                                 border:
                                   "0.10rem solid " +
                                   getFilterType("writer").color +
                                   " !important",
-                              },
-                            }}
-                            onClick={() => setSelectedFilterType("writer")}
-                          >
-                            YAZAR
-                          </Button>
-                          <Button
-                            variant="outlined"
-                            sx={{
-                              color: getFilterType("type").color,
-                              border:
-                                "0.10rem solid " +
-                                getFilterType("type").color +
-                                " !important",
-                              ":hover": {
-                                backgroundColor: getFilterType("type").color,
+                                ":hover": {
+                                  backgroundColor:
+                                    getFilterType("writer").color,
+                                  border:
+                                    "0.10rem solid " +
+                                    getFilterType("writer").color +
+                                    " !important",
+                                },
+                              }}
+                              onClick={() => setSelectedFilterType("writer")}
+                            >
+                              YAZAR
+                            </Button>
+                            <Button
+                              variant="outlined"
+                              sx={{
+                                color: getFilterType("type").color,
                                 border:
                                   "0.10rem solid " +
                                   getFilterType("type").color +
                                   " !important",
-                              },
-                            }}
-                            onClick={() => setSelectedFilterType("type")}
-                          >
-                            TÜR
-                          </Button>
-                        </Stack>
-                      )}
-                      {filterType === "type" && (
-                        <Button
-                          variant="outlined"
-                          sx={{
-                            color: getFilterType(selectedFilterType)?.color,
-                            border:
-                              "0.10rem solid " +
-                              getFilterType(selectedFilterType)?.color +
-                              " !important",
-                            ":hover": {
-                              backgroundColor:
-                                getFilterType(selectedFilterType)?.color,
+                                ":hover": {
+                                  backgroundColor: getFilterType("type").color,
+                                  border:
+                                    "0.10rem solid " +
+                                    getFilterType("type").color +
+                                    " !important",
+                                },
+                              }}
+                              onClick={() => setSelectedFilterType("type")}
+                            >
+                              TÜR
+                            </Button>
+                          </Stack>
+                        )}
+                        {filterType === "type" && (
+                          <Button
+                            variant="outlined"
+                            sx={{
+                              color: getFilterType(selectedFilterType)?.color,
                               border:
                                 "0.10rem solid " +
                                 getFilterType(selectedFilterType)?.color +
                                 " !important",
-                            },
-                          }}
-                          onClick={() => {
-                            setFilterType("filter");
-                          }}
+                              ":hover": {
+                                backgroundColor:
+                                  getFilterType(selectedFilterType)?.color,
+                                border:
+                                  "0.10rem solid " +
+                                  getFilterType(selectedFilterType)?.color +
+                                  " !important",
+                              },
+                            }}
+                            onClick={() => {
+                              setFilterType("filter");
+                            }}
+                          >
+                            {getFilterType(selectedFilterType).name}
+                          </Button>
+                        )}
+                      </InputAdornment>
+                    ),
+                  }}
+                />
+                {(() => {
+                  const data = rows
+                    ?.filter((value) => {
+                      if (searchValue !== "") {
+                        switch (selectedFilterType) {
+                          case "name":
+                            return value.name
+                              .toLowerCase()
+                              .includes(searchValue.toLowerCase());
+                          case "writer":
+                            return value.writer
+                              .toLowerCase()
+                              .includes(searchValue.toLowerCase());
+                          case "type":
+                            return value.type
+                              .toLowerCase()
+                              .includes(searchValue.toLowerCase());
+                          default:
+                            return (
+                              value.name
+                                .toLowerCase()
+                                .includes(searchValue.toLowerCase()) ||
+                              value.writer
+                                .toLowerCase()
+                                .includes(searchValue.toLowerCase()) ||
+                              value.type
+                                .toLowerCase()
+                                .includes(searchValue.toLowerCase())
+                            );
+                        }
+                      } else return true;
+                    })
+                    .slice(
+                      (page - 1) * pageSize,
+                      (page - 1) * pageSize + pageSize
+                    );
+                  if (data?.length > 0) {
+                    return (
+                      <>
+                        <TableContainer
+                          sx={{ backgroundColor: "white", height: "100%" }}
                         >
-                          {getFilterType(selectedFilterType).name}
-                        </Button>
-                      )}
-                    </InputAdornment>
-                  ),
-                }}
-              />
-              {(() => {
-                const data = rows
-                  ?.filter((value) => {
-                    if (searchValue !== "") {
-                      switch (selectedFilterType) {
-                        case "name":
-                          return value.name
-                            .toLowerCase()
-                            .includes(searchValue.toLowerCase());
-                        case "writer":
-                          return value.writer
-                            .toLowerCase()
-                            .includes(searchValue.toLowerCase());
-                        case "type":
-                          return value.type
-                            .toLowerCase()
-                            .includes(searchValue.toLowerCase());
-                        default:
-                          return (
-                            value.name
-                              .toLowerCase()
-                              .includes(searchValue.toLowerCase()) ||
-                            value.writer
-                              .toLowerCase()
-                              .includes(searchValue.toLowerCase()) ||
-                            value.type
-                              .toLowerCase()
-                              .includes(searchValue.toLowerCase())
-                          );
-                      }
-                    } else return true;
-                  })
-                  .slice(
-                    (page - 1) * pageSize,
-                    (page - 1) * pageSize + pageSize
-                  );
-                if (data?.length > 0) {
-                  return (
-                    <>
-                      <TableContainer
-                        sx={{ backgroundColor: "white", height: "100%" }}
-                      >
-                        <Table stickyHeader>
-                          <TableHead>
-                            <TableRow>
-                              {columns.map((column) => (
-                                <TableCell key={column.id}>
-                                  {column.label}
-                                </TableCell>
-                              ))}
-                            </TableRow>
-                          </TableHead>
-                          <TableBody>
-                            {data?.map((row) => {
-                              const status = getStatus(row.status);
-                              return (
-                                <TableRow
-                                  role="checkbox"
-                                  tabIndex={-1}
-                                  key={row.id}
-                                >
-                                  <TableCell>{row.name}</TableCell>
-                                  <TableCell>{row.writer}</TableCell>
-                                  <TableCell>{row.type}</TableCell>
-                                  <TableCell sx={{ color: status?.color }}>
-                                    {status.text}
+                          <Table stickyHeader>
+                            <TableHead>
+                              <TableRow>
+                                {columns.map((column) => (
+                                  <TableCell key={column.id}>
+                                    {column.label}
                                   </TableCell>
-                                  <TableCell>
-                                    <Stack
-                                      direction="row"
-                                      spacing={1}
-                                      justifyContent="center"
-                                    >
-                                      <Box sx={{ width: "2rem" }}>
-                                        {row.status === 1 && (
+                                ))}
+                              </TableRow>
+                            </TableHead>
+                            <TableBody>
+                              {data?.map((row) => {
+                                const status = getStatus(row.status);
+                                return (
+                                  <TableRow
+                                    role="checkbox"
+                                    tabIndex={-1}
+                                    key={row.id}
+                                  >
+                                    <TableCell>{row.name}</TableCell>
+                                    <TableCell>{row.writer}</TableCell>
+                                    <TableCell>{row.type}</TableCell>
+                                    <TableCell sx={{ color: status?.color }}>
+                                      {status.text}
+                                    </TableCell>
+                                    <TableCell>
+                                      <Stack
+                                        direction="row"
+                                        spacing={1}
+                                        justifyContent="center"
+                                      >
+                                        <Box sx={{ width: "2rem" }}>
+                                          {row.status === 1 && (
+                                            <IconButton
+                                              edge="end"
+                                              size="small"
+                                              onClick={() =>
+                                                changeStatus(
+                                                  row.id,
+                                                  BookStatus.NotFinished
+                                                )
+                                              }
+                                            >
+                                              <ArrowCounterClockwiseIcon
+                                                size="1.5rem"
+                                                color="#B05200"
+                                              />
+                                            </IconButton>
+                                          )}
+                                        </Box>
+                                        <Box sx={{ width: "2rem" }}>
+                                          {row.status === 0 ? (
+                                            <IconButton
+                                              edge="end"
+                                              size="small"
+                                              onClick={() =>
+                                                changeStatus(
+                                                  row.id,
+                                                  BookStatus.Ongoing
+                                                )
+                                              }
+                                            >
+                                              <BookOpenTextIcon
+                                                size="1.5rem"
+                                                color="#015850"
+                                              />
+                                            </IconButton>
+                                          ) : row.status === 1 ? (
+                                            <IconButton
+                                              edge="end"
+                                              size="small"
+                                              onClick={() =>
+                                                changeStatus(
+                                                  row.id,
+                                                  BookStatus.Finished
+                                                )
+                                              }
+                                            >
+                                              <BookIcon
+                                                size="1.5rem"
+                                                color="#015850"
+                                              />
+                                            </IconButton>
+                                          ) : null}
+                                        </Box>
+                                        <Box sx={{ width: "2rem" }}>
                                           <IconButton
                                             edge="end"
                                             size="small"
-                                            onClick={() =>
-                                              changeStatus(
-                                                row.id,
-                                                BookStatus.NotFinished
-                                              )
-                                            }
+                                            onClick={() => {
+                                              setSelectedRow(row);
+                                              setIsDeleteModalOpen(true);
+                                            }}
                                           >
-                                            <ArrowCounterClockwiseIcon
+                                            <TrashIcon
                                               size="1.5rem"
-                                              color="#B05200"
+                                              color="#FF0000"
                                             />
                                           </IconButton>
-                                        )}
-                                      </Box>
-                                      <Box sx={{ width: "2rem" }}>
-                                        {row.status === 0 ? (
-                                          <IconButton
-                                            edge="end"
-                                            size="small"
-                                            onClick={() =>
-                                              changeStatus(
-                                                row.id,
-                                                BookStatus.Ongoing
-                                              )
-                                            }
-                                          >
-                                            <BookOpenTextIcon
-                                              size="1.5rem"
-                                              color="#015850"
-                                            />
-                                          </IconButton>
-                                        ) : row.status === 1 ? (
-                                          <IconButton
-                                            edge="end"
-                                            size="small"
-                                            onClick={() =>
-                                              changeStatus(
-                                                row.id,
-                                                BookStatus.Finished
-                                              )
-                                            }
-                                          >
-                                            <BookIcon
-                                              size="1.5rem"
-                                              color="#015850"
-                                            />
-                                          </IconButton>
-                                        ) : null}
-                                      </Box>
-                                      <Box sx={{ width: "2rem" }}>
-                                        <IconButton
-                                          edge="end"
-                                          size="small"
-                                          onClick={() => {
-                                            setSelectedRow(row);
-                                            setIsDeleteModalOpen(true);
-                                          }}
-                                        >
-                                          <TrashIcon
-                                            size="1.5rem"
-                                            color="#FF0000"
-                                          />
-                                        </IconButton>
-                                      </Box>
-                                    </Stack>
-                                  </TableCell>
-                                </TableRow>
-                              );
-                            })}
-                          </TableBody>
-                        </Table>
-                      </TableContainer>
-                      <Box sx={{ display: "flex", justifyContent: "center" }}>
-                        <Pagination
-                          count={Math.ceil((rows?.length ?? 0) / pageSize)}
-                          page={page}
-                          variant="outlined"
-                          onChange={(_event, value: number) => {
-                            setPage(value);
-                          }}
-                          shape="rounded"
-                        />
-                      </Box>
+                                        </Box>
+                                      </Stack>
+                                    </TableCell>
+                                  </TableRow>
+                                );
+                              })}
+                            </TableBody>
+                          </Table>
+                        </TableContainer>
+                        <Box sx={{ display: "flex", justifyContent: "center" }}>
+                          <Pagination
+                            count={Math.ceil((rows?.length ?? 0) / pageSize)}
+                            page={page}
+                            variant="outlined"
+                            onChange={(_event, value: number) => {
+                              setPage(value);
+                            }}
+                            shape="rounded"
+                          />
+                        </Box>
+                        <Stack
+                          direction={"row"}
+                          width={"100%"}
+                          justifyContent={"end"}
+                        >
+                          <Button
+                            variant="contained"
+                            sx={{ paddingX: "2.5rem", paddingY: "0.5rem" }}
+                            onClick={() => setIsNewBookModalOpen(true)}
+                          >
+                            Ekle
+                          </Button>
+                        </Stack>
+                      </>
+                    );
+                  } else if (data?.length === 0) {
+                    return (
                       <Stack
-                        direction={"row"}
-                        width={"100%"}
-                        justifyContent={"end"}
+                        alignItems="center"
+                        justifyContent="center"
+                        height="100%"
+                        gap={2}
                       >
-                        <Button
-                          variant="contained"
-                          sx={{ paddingX: "2.5rem", paddingY: "0.5rem" }}
-                          onClick={() => setIsNewBookModalOpen(true)}
+                        <BooksIcon size="4rem" color="#B05200" />
+                        <Typography
+                          fontSize="1.5rem"
+                          sx={{
+                            whiteSpace: "pre-line",
+                            textAlign: "center",
+                            color: "#015850",
+                          }}
                         >
-                          Ekle
-                        </Button>
+                          Aramanıza uygun bir kitap bulunamadı.
+                        </Typography>
                       </Stack>
-                    </>
-                  );
-                } else if (data?.length === 0) {
-                  return (
-                    <Stack
-                      alignItems="center"
-                      justifyContent="center"
-                      height="100%"
-                      gap={2}
-                    >
-                      <BooksIcon size="4rem" color="#B05200" />
-                      <Typography
-                        fontSize="1.5rem"
-                        sx={{
-                          whiteSpace: "pre-line",
-                          textAlign: "center",
-                          color: "#015850",
-                        }}
-                      >
-                        Aramanıza uygun bir kitap bulunamadı.
-                      </Typography>
-                    </Stack>
-                  );
-                }
-              })()}
-            </>
+                    );
+                  }
+                })()}
+              </>
+            )
           )}
         </Stack>
       </Box>
