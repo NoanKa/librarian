@@ -1,5 +1,4 @@
 import { Box, Button, Paper, Stack, Typography } from "@mui/material";
-import Row from "./interface/Row";
 import { Book } from "../../main/types/Book";
 
 type DeleteModalProps = {
