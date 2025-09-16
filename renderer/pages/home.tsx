@@ -3,6 +3,7 @@ import Head from "next/head";
 import {
   Box,
   Button,
+  Fade,
   IconButton,
   InputAdornment,
   Pagination,
@@ -126,6 +127,11 @@ export default function HomePage() {
     );
   };
 
+  const handleFilterButtonClick = (type: "name" | "writer" | "type") => {
+    setSelectedFilterType(type);
+    setFilterType("type");
+  };
+
   useEffect(() => {
     asyncFunc(() => window.db.getBooks()).then((books: Book[]) => {
       if (books) {
@@ -140,12 +146,6 @@ export default function HomePage() {
       if (writers) setBookWriters(writers);
     });
   }, []);
-
-  useEffect(() => {
-    if (selectedFilterType !== undefined) {
-      setFilterType("type");
-    }
-  }, [selectedFilterType]);
 
   useEffect(() => {
     if (rows) {
@@ -298,105 +298,120 @@ export default function HomePage() {
                     ),
                     endAdornment: (
                       <InputAdornment position="end">
-                        {filterType === "filter" && (
-                          <IconButton
-                            edge="end"
-                            size="small"
-                            onClick={() => setFilterType("buttons")}
-                          >
-                            <FunnelIcon size="1.5rem" color="#015850" />
-                          </IconButton>
-                        )}
-                        {filterType === "buttons" && (
-                          <Stack direction={"row"} gap={"0.62rem"}>
-                            <Button
-                              variant="outlined"
-                              sx={{
-                                color: getFilterType("name").color,
-                                border:
-                                  "0.10rem solid " +
-                                  getFilterType("name").color +
-                                  " !important",
-                                ":hover": {
-                                  backgroundColor: getFilterType("name").color,
+                        <Fade in={true} timeout={300}>
+                          <Box key={filterType}>
+                            {filterType === "filter" && (
+                              <IconButton
+                                edge="end"
+                                size="small"
+                                onClick={() => setFilterType("buttons")}
+                              >
+                                <FunnelIcon size="1.5rem" color="#015850" />
+                              </IconButton>
+                            )}
+
+                            {filterType === "buttons" && (
+                              <Stack direction="row" gap="0.62rem">
+                                <Button
+                                  variant="outlined"
+                                  sx={{
+                                    color: getFilterType("name").color,
+                                    border:
+                                      "0.10rem solid " +
+                                      getFilterType("name").color +
+                                      " !important",
+                                    ":hover": {
+                                      backgroundColor:
+                                        getFilterType("name").color,
+                                      border:
+                                        "0.10rem solid " +
+                                        getFilterType("name").color +
+                                        " !important",
+                                    },
+                                  }}
+                                  onClick={() =>
+                                    handleFilterButtonClick("name")
+                                  }
+                                >
+                                  BAŞLIK
+                                </Button>
+                                <Button
+                                  variant="outlined"
+                                  sx={{
+                                    color: getFilterType("writer").color,
+                                    border:
+                                      "0.10rem solid " +
+                                      getFilterType("writer").color +
+                                      " !important",
+                                    ":hover": {
+                                      backgroundColor:
+                                        getFilterType("writer").color,
+                                      border:
+                                        "0.10rem solid " +
+                                        getFilterType("writer").color +
+                                        " !important",
+                                    },
+                                  }}
+                                  onClick={() =>
+                                    handleFilterButtonClick("writer")
+                                  }
+                                >
+                                  YAZAR
+                                </Button>
+                                <Button
+                                  variant="outlined"
+                                  sx={{
+                                    color: getFilterType("type").color,
+                                    border:
+                                      "0.10rem solid " +
+                                      getFilterType("type").color +
+                                      " !important",
+                                    ":hover": {
+                                      backgroundColor:
+                                        getFilterType("type").color,
+                                      border:
+                                        "0.10rem solid " +
+                                        getFilterType("type").color +
+                                        " !important",
+                                    },
+                                  }}
+                                  onClick={() =>
+                                    handleFilterButtonClick("type")
+                                  }
+                                >
+                                  TÜR
+                                </Button>
+                              </Stack>
+                            )}
+
+                            {filterType === "type" && (
+                              <Button
+                                variant="outlined"
+                                sx={{
+                                  color:
+                                    getFilterType(selectedFilterType)?.color,
                                   border:
                                     "0.10rem solid " +
-                                    getFilterType("name").color +
+                                    getFilterType(selectedFilterType)?.color +
                                     " !important",
-                                },
-                              }}
-                              onClick={() => setSelectedFilterType("name")}
-                            >
-                              BAŞLIK
-                            </Button>
-                            <Button
-                              variant="outlined"
-                              sx={{
-                                color: getFilterType("writer").color,
-                                border:
-                                  "0.10rem solid " +
-                                  getFilterType("writer").color +
-                                  " !important",
-                                ":hover": {
-                                  backgroundColor:
-                                    getFilterType("writer").color,
-                                  border:
-                                    "0.10rem solid " +
-                                    getFilterType("writer").color +
-                                    " !important",
-                                },
-                              }}
-                              onClick={() => setSelectedFilterType("writer")}
-                            >
-                              YAZAR
-                            </Button>
-                            <Button
-                              variant="outlined"
-                              sx={{
-                                color: getFilterType("type").color,
-                                border:
-                                  "0.10rem solid " +
-                                  getFilterType("type").color +
-                                  " !important",
-                                ":hover": {
-                                  backgroundColor: getFilterType("type").color,
-                                  border:
-                                    "0.10rem solid " +
-                                    getFilterType("type").color +
-                                    " !important",
-                                },
-                              }}
-                              onClick={() => setSelectedFilterType("type")}
-                            >
-                              TÜR
-                            </Button>
-                          </Stack>
-                        )}
-                        {filterType === "type" && (
-                          <Button
-                            variant="outlined"
-                            sx={{
-                              color: getFilterType(selectedFilterType)?.color,
-                              border:
-                                "0.10rem solid " +
-                                getFilterType(selectedFilterType)?.color +
-                                " !important",
-                              ":hover": {
-                                backgroundColor:
-                                  getFilterType(selectedFilterType)?.color,
-                                border:
-                                  "0.10rem solid " +
-                                  getFilterType(selectedFilterType)?.color +
-                                  " !important",
-                              },
-                            }}
-                            onClick={() => {
-                              setFilterType("filter");
-                            }}
-                          >
-                            {getFilterType(selectedFilterType).name}
-                          </Button>
-                        )}
+                                  ":hover": {
+                                    backgroundColor:
+                                      getFilterType(selectedFilterType)?.color,
+                                    border:
+                                      "0.10rem solid " +
+                                      getFilterType(selectedFilterType)?.color +
+                                      " !important",
+                                  },
+                                }}
+                                onClick={() => {
+                                  setFilterType("filter");
+                                }}
+                              >
+                                {getFilterType(selectedFilterType)?.name}
+                              </Button>
+                            )}
+                          </Box>
+                        </Fade>
                       </InputAdornment>
                     ),
                   }}
